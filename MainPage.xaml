@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Exportacion.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+
+            <StackLayout>
+                <Label Text="Recamier S.A" Style="{StaticResource Headline}"></Label>
+                <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
+            </StackLayout>
+
+            <Label Text="Archivo Exportacion"
+                   HorizontalOptions="Center">
+            </Label>
+
+            <Entry HorizontalOptions="FillAndExpand"
+                   x:Name="archivo"
+                   Completed="Archivo_Completed"
+                   >
+            </Entry>
+
+            <Button Text="Limpiar" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
+            <Button Text="Arqueo" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
+            <Button Text="Salir" HorizontalOptions="Center" Clicked="OnSalirClicked"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
