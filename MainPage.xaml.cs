@@ -7,79 +7,297 @@ namespace Exportacion
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        string texto; 
+        string[] ar_codigos = new string[1000];
+        string[] ar_descripcion = new string[1000];
+        int[] ar_cantidad = new int[1000];
+
         string[] ar_codigosR = new string[1000];
         string[] ar_descripcionR = new string[1000];
         int[] ar_cantidadR = new int[1000];
+        int[] ar_cajasR = new int[1000];
         int[] ar_facturaR = new int[1000];
 
+        int cantReal = 0;
+        int cantItem = 0;
         int totalRemision = 0;
         int total = 0;
         int total_cajas = 0;
+        int j = 0, jr = 0;
+        int cantidad = 0;
+        int NroCajas = 0;
 
         public MainPage()
         {
             InitializeComponent();
         }
 
-        //private void OnCounterClicked(object sender, EventArgs e)
-        //{
-        //    count++;
+        private void OnUsuario_OnLoaded(object sender, EventArgs e)
+        {
+            var usuarioLabel = (Label)sender;
+            usuarioLabel.Text = Environment.UserName;
+        }
 
-        //    if (count == 1)
-        //        CounterBtn.Text = $"Clicked {count} time";
-        //    else
-        //        CounterBtn.Text = $"Clicked {count} times";
+        private void OnTime_DateLoaded(object sender, EventArgs e)
+        {
+            DateTime currentDate = DateTime.Now;
 
-        //    SemanticScreenReader.Announce(CounterBtn.Text);
-        //}
+            var time_date = sender as Label;
+            if (time_date != null)
+            {
+                time_date.Text = currentDate.ToString("d");
+            }
+        }
+
+        private void OnTimeLoaded(object sender, EventArgs e)
+        {
+            DateTime currentDate = DateTime.Now;
+
+            var time_date = sender as Label;
+            if (time_date != null)
+            {
+                time_date.Text = currentDate.ToString("T");
+            }
+        }
 
         private async void Archivo_Completed(object sender, EventArgs e)
         {
             var entry = sender as Entry;
-            if (string.IsNullOrEmpty(entry.Text))
+            string baseDir = @"C:\Recamier\Archivos";
+            string filePath = Path.Combine(baseDir, $"{entry.Text}.txt");
+
+            if (File.Exists(filePath))
             {
-                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-        {
-            { DevicePlatform.iOS, new[] { "public.text" } },
-            { DevicePlatform.Android, new[] { "text/plain" } },
-            { DevicePlatform.WinUI, new[] { ".txt" } }, 
-            { DevicePlatform.MacCatalyst, new[] { "public.text" } } 
-        });
-
-                var fileResult = await FilePicker.PickAsync(new PickOptions
+                ProcessFileConfirmation(entry.Text);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(entry.Text))
                 {
-                    PickerTitle = "Seleccione un archivo",
-                    FileTypes = customFileType
-                });
-
-                if (fileResult != null)
+                    var fileResult = await FilePicker.PickAsync(new PickOptions
+                    {
+                        PickerTitle = "Seleccione un archivo",
+                        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                    entry.Text = Path.GetFileNameWithoutExtension(fileResult.FullPath);
+                    { DevicePlatform.iOS, new[] { "public.text" } },
+                    { DevicePlatform.Android, new[] { "text/plain" } },
+                    { DevicePlatform.WinUI, new[] { ".txt" } },
+                    { DevicePlatform.MacCatalyst, new[] { "public.text" } }
+                })
+                    });
+
+                    if (fileResult != null)
+                    {
+                        filePath = fileResult.FullPath;
+                        entry.Text = Path.GetFileNameWithoutExtension(filePath);
+                        if (File.Exists(filePath))
+                        {
+                            ProcessFileConfirmation(entry.Text);
+                            
+                        }
+                        else
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Error", "Archivo no encontrado.", "OK");
+                        }
+                    }
                 }
                 else
                 {
-                    return;
+                    await Application.Current.MainPage.DisplayAlert("Error", "Archivo no encontrado. Verifique el nombre e intente de nuevo.", "OK");
                 }
-            }
-
-            if (!string.IsNullOrEmpty(entry.Text))
-            {
-                ProcessFile(entry.Text);
             }
         }
 
-        private async void ProcessFile(string fileName)
+        private async void ProcessFileConfirmation(string fileName)
         {
-            string baseDir = @"C:\Recamier\Archivos";
-            string dirPath = Path.Combine(baseDir, fileName);
+            Console.WriteLine("Archivo procesado correctamente.");
 
-            if (!Directory.Exists(dirPath))
+            string folderName = fileName;
+            string baseDir = @"C:\Recamier\Archivos";
+            string specificFolderPath = Path.Combine(baseDir, folderName);
+            string despachoFileName = Path.Combine(specificFolderPath, $"despacho_{fileName}.txt");
+            string remisionFileName = Path.Combine(baseDir, $"{fileName}.txt");
+
+            if (!Directory.Exists(specificFolderPath))
             {
-                Directory.CreateDirectory(dirPath);
-                await DisplayAlert("Directorio Creado", $"El directorio {fileName} ha sido creado.", "OK");
+                Directory.CreateDirectory(specificFolderPath);
             }
 
+            if (!File.Exists(remisionFileName))
+            {
+                using (var fs = File.Create(remisionFileName))
+                {
+
+                }
+            }
+
+            if (!File.Exists(despachoFileName))
+            {
+                using (var fs = File.Create(despachoFileName))
+                {
+
+                }
+            }
+
+            fldCodigo.IsEnabled = true;
+            fldNroCajas.IsEnabled = true;
+            fldCodigo.Focus();
+
+            if (File.Exists(remisionFileName))
+            {
+                try
+                {
+                    using (StreamReader sr = new StreamReader(remisionFileName))
+                    {
+                        string lineaR;
+                        int jr = 0;
+                        totalRemision = 0;
+                        while ((lineaR = sr.ReadLine()) != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(lineaR) && lineaR.Length > 68)
+                            {
+                                Console.WriteLine("cargando remision" + lineaR.Substring(61, 6));
+                                int cantidad = int.Parse(lineaR.Substring(61, 6));
+                                ar_codigosR[jr] = lineaR.Substring(0, 20).Trim();
+                                ar_descripcionR[jr] = lineaR.Substring(21, 39).Trim();
+                                ar_cantidadR[jr] = cantidad;
+                                ar_facturaR[jr] = int.Parse(lineaR.Substring(68));
+                                totalRemision += cantidad;
+                                jr++;
+                            }
+                        }
+                        Console.WriteLine($"Total remisión: {totalRemision}");
+                        //await Application.Current.MainPage.DisplayAlert("Total remisión", $"Total remisión: {totalRemision}", "OK");
+                    }
+                }
+                catch (Exception er)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Error leyendo remisión: {er.Message}", "OK");
+                }
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Alerta", "¡No existe Remisión!", "OK");
+            }
+
+            texto = null;
+
+            if (File.Exists(despachoFileName))
+            {
+                Console.WriteLine("Entra a cargar archivo " + Path.GetFileName(despachoFileName) + " " + File.Exists(despachoFileName));
+                try
+                {
+                    using (StreamReader sr = new StreamReader(despachoFileName))
+                    {
+                        string linea;
+                        j = 0;
+                        total = 0;
+                        total_cajas = 0;
+                        while ((linea = sr.ReadLine()) != null)
+                        {
+                            Console.WriteLine(linea);
+                            Console.WriteLine(linea.Substring(17, 3));
+                            int cantidad = int.Parse(linea.Substring(27, 5));
+                            int NroCajas = int.Parse(linea.Substring(35, 5));
+                            total += cantidad;
+                            total_cajas += NroCajas;
+                            ar_codigosR[j] = linea.Substring(0, 6);
+                            ar_cantidadR[j] = cantidad;
+                            j++;
+                            if (texto == null)
+                            {
+                                texto = linea;
+                            }
+                            else
+                            {
+                                texto += linea;
+                            }
+                            texto += "\n";
+                        }
+                        Console.WriteLine($"Carga Completa - Total: {total}, Total Cajas: {total_cajas}");
+
+                        //await Application.Current.MainPage.DisplayAlert("Carga Completa", $"Total: {total}, Total Cajas: {total_cajas}", "OK");
+                    }
+                }
+                catch (Exception ee)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Error leyendo archivo de despacho: " + ee.Message, "OK");
+                }
+            }
+
+            Console.WriteLine(total);
+
+            double porcentaje = totalRemision > 0 ? ((total * 100.0) / totalRemision) : 0.0;
+            string porcentajeFormateado = porcentaje.ToString("N1");
+
+            Console.WriteLine(" %  " + porcentajeFormateado + "%");
+
+            //txtcodigos.text = texto;  // Asumiendo que txtCodigos es un Entry o Label
+            fldCajas.Text = total_cajas.ToString(); 
+            fldUnidades.Text = $"{total} de {totalRemision} ({porcentajeFormateado}%)";
+
+            fldCodigo.Focus();
+
+
+        }
+
+        private async void OnArqueoActionPerformed(object sender, EventArgs e)
+        {
+            string cod = "", codR = "";
+            int i = 0, n = 0;
+            int cantR = 0, cantF = 0;
+            int tamanoPantalla = 0;
+            bool swArqueo = false;
+
+            string arqueo = "ARQUEO ITEMS DE DESPACHO \n-------------------------------------\n";
+
+            for (i = 0; i < ar_codigosR.Length; i++)
+            {
+                cantR = 0;
+                cantF = ar_cantidadR[i];
+                codR = ar_codigosR[i];
+                if (codR == null)
+                {
+                    break;
+                }
+                for (n = 0; n < ar_codigos.Length; n++)
+                {
+                    cod = ar_codigos[n];
+                    if (cod == null)
+                    {
+                        break;
+                    }
+
+                    if (cod.Trim().Equals(codR.Trim()))
+                    {
+                        cantR += ar_cantidad[n];
+                        Console.WriteLine($"i={i}  n={n}  {ar_codigosR[i]} - {ar_codigos[n]} Cant R {ar_cantidadR[i]}  Cant {ar_cantidad[n]}");
+                    }
+                }
+
+                tamanoPantalla++;
+                if (tamanoPantalla > 15)
+                {
+                    tamanoPantalla = 0;
+                    arqueo += "...";
+                    await DisplayAlert("Arqueo", arqueo, "OK");
+                    arqueo = "ITEMS CON PENDIENTES DE DESPACHO \n-------------------------------------\n...\n";
+                }
+                swArqueo = true;
+                arqueo += $"{ar_codigosR[i]} {ar_descripcionR[i]}              {cantR} de {ar_cantidadR[i]}\n";
+            }
+
+            if (swArqueo)
+            {
+                await DisplayAlert("Arqueo", arqueo, "OK");
+            }
+            else
+            {
+                arqueo += "\n\n TODO OK";
+                await DisplayAlert("Arqueo", arqueo, "OK");
+            }
+
+            fldCodigo.Focus();
         }
 
         private void OnLimpiarClicked(object sender, EventArgs e)

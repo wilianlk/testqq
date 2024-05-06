@@ -13,6 +13,10 @@
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
             </StackLayout>
 
+            <Button Text="Limpiar" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
+            <Button Text="Arqueo" HorizontalOptions="Center" Clicked="OnArqueoActionPerformed"/>
+            <Button Text="Salir" HorizontalOptions="Center" Clicked="OnSalirClicked"/>
+
             <Label Text="Archivo Exportacion"
                    HorizontalOptions="Center">
             </Label>
@@ -23,9 +27,68 @@
                    >
             </Entry>
 
-            <Button Text="Limpiar" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
-            <Button Text="Arqueo" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
-            <Button Text="Salir" HorizontalOptions="Center" Clicked="OnSalirClicked"/>
+            <Label Text="Codigo Item"
+                   HorizontalOptions="Center">
+            </Label>
+
+            <Entry HorizontalOptions="FillAndExpand"
+                   x:Name="fldCodigo"
+                   IsEnabled="False">
+            </Entry>
+
+            <Label Text="Cantidad de Cajas"
+                   HorizontalOptions="Center">
+            </Label>
+
+            <Entry HorizontalOptions="FillAndExpand"
+                   x:Name="fldNroCajas"
+                   IsEnabled="False">
+            </Entry>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Text="Total Cajas" />
+
+                <Entry Grid.Column="1"
+                       Margin="0"
+                       HorizontalOptions="FillAndExpand"
+                       x:Name="fldCajas"
+                       Text="0"
+                       IsReadOnly="False"
+                       WidthRequest="70" />        
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Text="Total Unidades">
+                </Label>
+
+                <Entry Grid.Column="1"
+                       Margin="0"
+                       HorizontalOptions="FillAndExpand"
+                       x:Name="fldUnidades"
+                       Text="0"
+                       IsReadOnly="False"
+                       WidthRequest="150" />     
+            </Grid>
+
+
+            <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded">
+            </Label>
+
+            <Label x:Name="Usuario" Loaded="OnTimeLoaded">
+            </Label>
+
+            <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded">
+            </Label>
 
         </VerticalStackLayout>
     </ScrollView>
