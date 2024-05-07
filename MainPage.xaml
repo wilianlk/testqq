@@ -13,6 +13,7 @@
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
             </StackLayout>
 
+            <Button Text="Otras Fotos" HorizontalOptions="Center" Clicked="OntGuardarAction"/>
             <Button Text="Limpiar" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
             <Button Text="Arqueo" HorizontalOptions="Center" Clicked="OnArqueoActionPerformed"/>
             <Button Text="Salir" HorizontalOptions="Center" Clicked="OnSalirClicked"/>
@@ -22,7 +23,7 @@
             </Label>
 
             <Entry HorizontalOptions="FillAndExpand"
-                   x:Name="archivo"
+                   x:Name="fldFactura"
                    Completed="Archivo_Completed"
                    >
             </Entry>

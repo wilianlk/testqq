@@ -241,6 +241,85 @@ namespace Exportacion
 
         }
 
+        private async void OntGuardarAction(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(fldFactura.Text) || fldFactura.Text.Length < 2)
+            {
+                await DisplayAlert("¡* * * O J O * * *!", "No se ha dado nombre de exportación", "OK");
+                fldFactura.Focus();
+                return;
+            }
+
+            await DisplayAlert("Información", "Favor tome las fotos y al terminar de tomarlas presione Aceptar", "OK");
+
+            if (!Fotos("O"))
+            {
+                
+            }
+
+            fldCodigo.Focus();
+        }
+
+        public bool Fotos(string tipoFoto)
+        {
+            if (fldFactura.Text.Length < 2)
+            {
+                DisplayAlert("Alerta", "No se ha dado nombre de exportación!", "OK");
+                return false;
+            }
+
+            string userName = Environment.UserName;
+
+            string nomCarpetaFotos = $@"C:\Users\{userName}\Pictures\Camera Roll";
+            string nomCarpetaDestinoFotos = $@"C:\Recamier\Archivos\{fldFactura.Text}";
+
+            if (!Directory.Exists(nomCarpetaFotos))
+            {
+                Directory.CreateDirectory(nomCarpetaFotos);
+            }
+
+            string[] listado = Directory.GetFiles(nomCarpetaFotos);
+            if (listado == null || listado.Length == 0)
+            {
+                DisplayAlert("Alerta", "No se encontraron fotos!", "OK");
+                fldCodigo.Focus();
+                return false;
+            }
+            else
+            {
+                string currentTime = DateTime.Now.ToString("HHmmss");
+                for (int i = 0; i < listado.Length; i++)
+                {
+                    string archivoOrigen = listado[i];
+                    string nombreFoto = "";
+
+                    if (tipoFoto == "I")
+                    {
+                        nombreFoto = Path.Combine(nomCarpetaDestinoFotos,
+                            $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, 6)}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{i}.jpg");
+                    }
+                    else if (tipoFoto == "O")
+                    {
+                        nombreFoto = Path.Combine(nomCarpetaDestinoFotos,
+                            $"{fldFactura.Text}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{i}.jpg");
+                    }
+
+                    try
+                    {
+                        File.Move(archivoOrigen, nombreFoto, true);
+                        Console.WriteLine("OK");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al mover el archivo: {ex.Message}");
+                    }
+
+                }
+            }
+            
+            return true;
+        }
+
         private async void OnArqueoActionPerformed(object sender, EventArgs e)
         {
             string cod = "", codR = "";
@@ -302,7 +381,7 @@ namespace Exportacion
 
         private void OnLimpiarClicked(object sender, EventArgs e)
         {
-            archivo.Text = "";
+            fldFactura.Text = "";
         }
 
         private void OnSalirClicked(object sender, EventArgs e)
