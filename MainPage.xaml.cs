@@ -2,12 +2,23 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Exportacion
 {
     public partial class MainPage : ContentPage
     {
-        string texto; 
+        string miUsuario = Environment.UserName;
+
+        private DateTime actual = DateTime.Now;
+
+        private static readonly string formatter = "MM/dd/yyyy";
+        private static readonly string timeFormat = "hh:mm:ss tt";
+
+        string miFecha;
+        string miHora;
+
+        string texto;
         string[] ar_codigos = new string[1000];
         string[] ar_descripcion = new string[1000];
         int[] ar_cantidad = new int[1000];
@@ -93,7 +104,7 @@ namespace Exportacion
                         if (File.Exists(filePath))
                         {
                             ProcessFileConfirmation(entry.Text);
-                            
+
                         }
                         else
                         {
@@ -231,7 +242,7 @@ namespace Exportacion
             Console.WriteLine(" %  " + porcentajeFormateado + "%");
 
             txtCodigos.Text = texto;
-            fldCajas.Text = total_cajas.ToString(); 
+            fldCajas.Text = total_cajas.ToString();
             fldUnidades.Text = $"{total} de {totalRemision} ({porcentajeFormateado}%)";
 
             fldCodigo.Focus();
@@ -252,7 +263,7 @@ namespace Exportacion
 
             if (!Fotos("O"))
             {
-                
+
             }
 
             fldCodigo.Focus();
@@ -314,11 +325,11 @@ namespace Exportacion
 
                 }
             }
-            
+
             return true;
         }
 
-        private async void OnfldCodigo_Completed(object sender, EventArgs e)
+        private async void OnfldCodigoCompleted(object sender, EventArgs e)
         {
             string cadena = fldCodigo.Text;
             if (cadena.Length < 19)
@@ -330,8 +341,8 @@ namespace Exportacion
             {
                 Console.WriteLine("Cadena=" + cadena);
                 string codigo = cadena.Substring(0, 6);
-                string lote = cadena.Substring(6, 12);
-                string op = cadena.Substring(12, 18);
+                string lote = cadena.Substring(6, 6);
+                string op = cadena.Substring(12, 6);
                 string descripcion = "-";
                 descripcion = LeeItem(codigo);
                 cantItem = LeeCantFactura(codigo);
@@ -358,8 +369,6 @@ namespace Exportacion
         private string LeeItem(string codigo)
         {
             string descripcion = null;
-
-            Console.WriteLine("lee item " + codigo);
 
             for (int l = 0; l < ar_codigosR.Length; l++)
             {
@@ -440,6 +449,123 @@ namespace Exportacion
             return cantidadRemision;
         }
 
+        private async void OnfldNroCajasCompleted(object sender, EventArgs e)
+        {
+
+            if (fldNroCajas.Text.Length < 1)
+            {
+                await DisplayAlert("Atención", "Ojo cantidad nula", "OK");
+                fldNroCajas.Text = "0";
+                fldNroCajas.Focus();
+                return;
+            }
+
+            int wNroCajas = int.Parse(fldNroCajas.Text);
+            if (wNroCajas == 0)
+            {
+                await DisplayAlert("Atención", "Ojo cantidad en cero", "OK");
+                fldNroCajas.Text = "0";
+                fldNroCajas.Focus();
+                return;
+            }
+
+            Console.WriteLine("Cajas " + fldNroCajas.Text);
+            string cadena = fldCodigo.Text;
+            Console.WriteLine("Cadena=" + cadena);
+
+            string codigo = cadena.Substring(0, 6);
+            string lote = cadena.Substring(6, 6);
+            string op = cadena.Substring(12, 6);
+            string descripcion = LeeItem(codigo);
+            int factura = LeeFactura(codigo);
+            FechaHora();
+
+            cantidad = int.Parse(cadena.Substring(18));
+            NroCajas = int.Parse(fldNroCajas.Text);
+            cantidad *= NroCajas;
+
+            if ((cantidad + cantReal) > cantItem)
+            {
+                await DisplayAlert("Error", $"Cantidad {cantReal + cantidad} > a cantidad de factura {cantItem}", "OK");
+                fldCodigo.Focus();
+                return;
+            }
+
+            total += cantidad;
+            total_cajas += NroCajas;
+
+            NumberFormatInfo nfi = new NumberFormatInfo { NumberDecimalDigits = 1 };
+            double porcentaje = (double)(total * 100) / totalRemision;
+            Console.WriteLine("  % " + porcentaje);
+
+            fldCajas.Text = total_cajas.ToString();
+            fldUnidades.Text = $"{total} de {totalRemision}   ({porcentaje.ToString("N", nfi)}%)";
+            Console.WriteLine($"action performed {j} {codigo} {descripcion} lote {lote} op {op} {cantidad} {total}");
+
+            if (descripcion != null)
+            {
+                string formattedCantidad = cantidad.ToString("N1", CultureInfo.InvariantCulture);
+                string formattedNroCajas = NroCajas.ToString("N1", CultureInfo.InvariantCulture);
+
+                if (j == 0)
+                {
+                    texto = $"{codigo} | {lote} | {op} | {formattedCantidad} | {formattedNroCajas} | {factura} | {descripcion} | {miUsuario} | {miFecha} | {miHora}\n";
+                }
+                else
+                {
+                    texto += $"{codigo} | {lote} | {op} | {formattedCantidad} | {formattedNroCajas} | {factura} | {descripcion} | {miUsuario} | {miFecha} | {miHora}\n";
+                }
+
+                //botGuardar.IsEnabled = true;
+                //swGrabar = true;
+                txtCodigos.Text = texto;
+
+                fldCodigo.Text = "";
+                j++;
+                //Grabar();
+            }
+            else
+            {
+                await DisplayAlert("Error", "¡Item no válido para este despacho!", "OK");
+            }
+            fldCodigo.Focus();
+        }
+
+        private int LeeFactura(string codigo)
+        {
+            int l, factura = 0;
+
+            for (l = 0; l < ar_codigosR.Length; l++)
+            {
+                string cod = ar_codigosR[l];
+                if (string.IsNullOrEmpty(cod))
+                {
+                    break;
+                }
+
+                Console.WriteLine($"l= {l}");
+                Console.WriteLine($"{ar_codigosR[l]}{ar_descripcionR[l]}");
+                Console.WriteLine($"compara {codigo} Vs {cod} {cod.Trim()} {codigo.Length}");
+
+                if (cod.Trim().Equals(codigo.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    factura = ar_facturaR[l];
+                    Console.WriteLine(factura);
+                    break;
+                }
+            }
+
+            Console.WriteLine($"Factura: {factura}");
+            return factura;
+        }
+
+        public void FechaHora()
+        {
+            actual = DateTime.Now;
+            miFecha = actual.ToString(formatter);
+            miHora = actual.ToString(timeFormat);
+        }
+
         private async void OnArqueoActionPerformed(object sender, EventArgs e)
         {
             string cod = "", codR = "";
@@ -502,14 +628,14 @@ namespace Exportacion
         private void OnLimpiarClicked(object sender, EventArgs e)
         {
             fldFactura.Text = "";
+            fldCodigo.Text = "";
         }
 
         private void OnSalirClicked(object sender, EventArgs e)
         {
-           #if WINDOWS
-            Application.Current?.CloseWindow(Application.Current.MainPage.Window);
-           #endif
-
+            #if WINDOWS
+                Application.Current?.CloseWindow(Application.Current.MainPage.Window);
+            #endif
         }
 
     }

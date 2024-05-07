@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             Title="Exportacion"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Exportacion.MainPage">
 
@@ -13,10 +14,33 @@
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
             </StackLayout>
 
-            <Button Text="Otras Fotos" HorizontalOptions="Center" Clicked="OntGuardarAction"/>
-            <Button Text="Limpiar" HorizontalOptions="Center" Clicked="OnLimpiarClicked"/>
-            <Button Text="Arqueo" HorizontalOptions="Center" Clicked="OnArqueoActionPerformed"/>
-            <Button Text="Salir" HorizontalOptions="Center" Clicked="OnSalirClicked"/>
+            <StackLayout Orientation="Horizontal">
+
+                <Button 
+                    Text="Botón con bordes redondeados"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    BackgroundColor="#3498DB"
+                    CornerRadius="20"
+                    Padding="15"/>
+                
+                <Button Text="Otras Fotos" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OntGuardarAction"/>
+                <Button Text="Limpiar" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OnLimpiarClicked"/>
+                <Button Text="Arqueo" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OnArqueoActionPerformed"/>
+                <Button Text="Salir" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OnSalirClicked"/>
+            </StackLayout>
 
             <Label Text="Archivo Exportacion"
                    HorizontalOptions="Center">
@@ -35,20 +59,21 @@
             <Entry HorizontalOptions="FillAndExpand"
                    x:Name="fldCodigo"
                    IsEnabled="False"
-                   Completed="OnfldCodigo_Completed">
-            </Entry>
-
-            <Entry HorizontalOptions="FillAndExpand"
-                   x:Name="txtCodigos"
-                   IsEnabled="False">
+                   Completed="OnfldCodigoCompleted">
             </Entry>
 
             <Label Text="Cantidad de Cajas"
-                   HorizontalOptions="Center">
+                    HorizontalOptions="Center">
             </Label>
 
             <Entry HorizontalOptions="FillAndExpand"
                    x:Name="fldNroCajas"
+                   IsEnabled="False"
+                   Completed="OnfldNroCajasCompleted">
+            </Entry>
+
+            <Entry HorizontalOptions="FillAndExpand"
+                   x:Name="txtCodigos"
                    IsEnabled="False">
             </Entry>
 
@@ -66,7 +91,7 @@
                        x:Name="fldCajas"
                        Text="0"
                        IsReadOnly="False"
-                       WidthRequest="70" />        
+                       WidthRequest="70" />
             </Grid>
 
             <Grid>
@@ -84,9 +109,8 @@
                        x:Name="fldUnidades"
                        Text="0"
                        IsReadOnly="False"
-                       WidthRequest="150" />     
+                       WidthRequest="150" />
             </Grid>
-
 
             <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded">
             </Label>
