@@ -34,6 +34,12 @@
 
             <Entry HorizontalOptions="FillAndExpand"
                    x:Name="fldCodigo"
+                   IsEnabled="False"
+                   Completed="OnfldCodigo_Completed">
+            </Entry>
+
+            <Entry HorizontalOptions="FillAndExpand"
+                   x:Name="txtCodigos"
                    IsEnabled="False">
             </Entry>
 

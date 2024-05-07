@@ -225,14 +225,12 @@ namespace Exportacion
                 }
             }
 
-            Console.WriteLine(total);
-
             double porcentaje = totalRemision > 0 ? ((total * 100.0) / totalRemision) : 0.0;
             string porcentajeFormateado = porcentaje.ToString("N1");
 
             Console.WriteLine(" %  " + porcentajeFormateado + "%");
 
-            //txtcodigos.text = texto;  // Asumiendo que txtCodigos es un Entry o Label
+            txtCodigos.Text = texto;
             fldCajas.Text = total_cajas.ToString(); 
             fldUnidades.Text = $"{total} de {totalRemision} ({porcentajeFormateado}%)";
 
@@ -318,6 +316,128 @@ namespace Exportacion
             }
             
             return true;
+        }
+
+        private async void OnfldCodigo_Completed(object sender, EventArgs e)
+        {
+            string cadena = fldCodigo.Text;
+            if (cadena.Length < 19)
+            {
+                await Application.Current.MainPage.DisplayAlert("Alerta", "Dato ingresado incompleto - intente de nuevo", "OK");
+                fldCodigo.Focus();
+            }
+            else
+            {
+                Console.WriteLine("Cadena=" + cadena);
+                string codigo = cadena.Substring(0, 6);
+                string lote = cadena.Substring(6, 12);
+                string op = cadena.Substring(12, 18);
+                string descripcion = "-";
+                descripcion = LeeItem(codigo);
+                cantItem = LeeCantFactura(codigo);
+                if (cantItem == 0)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Alerta", "¡Item no existe en esta importación!", "OK");
+                    fldCodigo.Text = "";
+                    fldCodigo.Focus();
+                    return;
+                }
+                cantReal = LeeCantReal(codigo);
+                Console.WriteLine("op =" + op);
+                Console.WriteLine("lote= " + lote);
+                fldNroCajas.Text = "0";
+
+                await Application.Current.MainPage.DisplayAlert("Instrucción", "Favor tome las fotos y al terminar de tomarlas presione Aceptar", "OK");
+                if (Fotos("I"))
+                {
+                    fldNroCajas.Focus();
+                }
+            }
+        }
+
+        private string LeeItem(string codigo)
+        {
+            string descripcion = null;
+
+            Console.WriteLine("lee item " + codigo);
+
+            for (int l = 0; l < ar_codigosR.Length; l++)
+            {
+                string cod = ar_codigosR[l];
+
+                Console.WriteLine($"l= {l}");
+                Console.WriteLine($"{ar_codigosR[l]}{ar_descripcionR[l]}");
+
+                if (ar_codigosR[l] == null)
+                {
+                    break;
+                }
+
+                Console.WriteLine($"compara {codigo} Vs {cod.Trim()} {codigo.Length}");
+
+                if (cod.Trim().Equals(codigo.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    descripcion = ar_descripcionR[l];
+                    Console.WriteLine(descripcion);
+                    break;
+                }
+            }
+
+            Console.WriteLine("Descripcion " + descripcion);
+
+            return descripcion;
+        }
+
+        private int LeeCantFactura(string codigo)
+        {
+            int cantidadRemision = 0;
+
+            Console.WriteLine("lee cant fact item " + codigo);
+
+            for (int l = 0; l < ar_codigosR.Length; l++)
+            {
+                string cod = ar_codigosR[l];
+                if (cod == null)
+                {
+                    break;
+                }
+
+                if (cod.Trim().Equals(codigo.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    int cant = ar_cantidadR[l];
+                    cantidadRemision += cant;
+                }
+            }
+
+            Console.WriteLine($"Cantidad fact {codigo} = {cantidadRemision}");
+
+            return cantidadRemision;
+        }
+
+        private int LeeCantReal(string codigo)
+        {
+            int cantidadRemision = 0;
+
+            Console.WriteLine("lee cant despachada item " + codigo);
+
+            for (int l = 0; l < ar_codigos.Length; l++)
+            {
+                string cod = ar_codigos[l];
+                if (cod == null)
+                {
+                    break;
+                }
+
+                if (cod.Trim().Equals(codigo.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    int cant = ar_cantidad[l];
+                    cantidadRemision += cant;
+                }
+            }
+
+            Console.WriteLine($"Cantidad despachada {codigo} = {cantidadRemision}");
+
+            return cantidadRemision;
         }
 
         private async void OnArqueoActionPerformed(object sender, EventArgs e)
