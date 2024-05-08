@@ -13,7 +13,6 @@ namespace Exportacion
         private DateTime actual = DateTime.Now;
 
         private static readonly string formatter = "MM/dd/yyyy";
-        private static readonly string timeFormat = "hh:mm:ss tt";
 
         string miFecha;
         string miHora;
@@ -37,6 +36,11 @@ namespace Exportacion
         int j = 0, jr = 0;
         int cantidad = 0;
         int NroCajas = 0;
+
+        bool sw_grabar = false, sw_copiar = false;
+
+        string carpeta;
+        string carpeta_copia = @"C:\Recamier\Archivos\Copia";
 
         public MainPage()
         {
@@ -74,8 +78,8 @@ namespace Exportacion
         private async void Archivo_Completed(object sender, EventArgs e)
         {
             var entry = sender as Entry;
-            string baseDir = @"C:\Recamier\Archivos";
-            string filePath = Path.Combine(baseDir, $"{entry.Text}.txt");
+            carpeta = @"C:\Recamier\Archivos";
+            string filePath = Path.Combine(carpeta, $"{entry.Text}.txt");
 
             if (File.Exists(filePath))
             {
@@ -124,10 +128,9 @@ namespace Exportacion
             Console.WriteLine("Archivo procesado correctamente.");
 
             string folderName = fileName;
-            string baseDir = @"C:\Recamier\Archivos";
-            string specificFolderPath = Path.Combine(baseDir, folderName);
+            string specificFolderPath = Path.Combine(carpeta, folderName);
             string despachoFileName = Path.Combine(specificFolderPath, $"despacho_{fileName}.txt");
-            string remisionFileName = Path.Combine(baseDir, $"{fileName}.txt");
+            string remisionFileName = Path.Combine(carpeta, $"{fileName}.txt");
 
             if (!Directory.Exists(specificFolderPath))
             {
@@ -225,9 +228,7 @@ namespace Exportacion
                             }
                             texto += "\n";
                         }
-                        Console.WriteLine($"Carga Completa - Total: {total}, Total Cajas: {total_cajas}");
-
-                        //await Application.Current.MainPage.DisplayAlert("Carga Completa", $"Total: {total}, Total Cajas: {total_cajas}", "OK");
+                        
                     }
                 }
                 catch (Exception ee)
@@ -246,7 +247,6 @@ namespace Exportacion
             fldUnidades.Text = $"{total} de {totalRemision} ({porcentajeFormateado}%)";
 
             fldCodigo.Focus();
-
 
         }
 
@@ -368,32 +368,39 @@ namespace Exportacion
 
         private string LeeItem(string codigo)
         {
-            string descripcion = null;
+            string descripcion = null,cod;
+            int i;
 
-            for (int l = 0; l < ar_codigosR.Length; l++)
+            Console.WriteLine("Lee item: " + codigo);
+
+            for (i = 0; i < ar_codigosR.Length; i++)
             {
-                string cod = ar_codigosR[l];
-
-                Console.WriteLine($"l= {l}");
-                Console.WriteLine($"{ar_codigosR[l]}{ar_descripcionR[l]}");
-
-                if (ar_codigosR[l] == null)
+                if (!string.IsNullOrEmpty(ar_codigosR[i]) && ar_codigosR[i] != null)
                 {
-                    break;
-                }
 
-                Console.WriteLine($"compara {codigo} Vs {cod.Trim()} {codigo.Length}");
+                    Console.WriteLine(ar_codigosR[i]);
 
-                if (cod.Trim().Equals(codigo.Trim(), StringComparison.OrdinalIgnoreCase))
-                {
-                    descripcion = ar_descripcionR[l];
-                    Console.WriteLine(descripcion);
-                    break;
+                    cod = ar_codigosR[i];
+                    Console.WriteLine($"i= {i}");
+                    Console.WriteLine(ar_codigosR[i] + ar_descripcionR[i]);
+
+                    if (ar_codigosR[i] == null)
+                    {
+                        break;
+                    }
+
+                    Console.WriteLine($"Compara {codigo} Vs {cod} {cod.Trim()} {codigo.Length} {ar_codigosR}");
+
+                    if (cod.Trim().Equals(codigo.Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        descripcion = ar_descripcionR[i];
+                        Console.WriteLine(descripcion);
+                        break;
+                    }
                 }
             }
 
-            Console.WriteLine("Descripcion " + descripcion);
-
+            Console.WriteLine("Descripción: " + descripcion);
             return descripcion;
         }
 
@@ -504,8 +511,8 @@ namespace Exportacion
 
             if (descripcion != null)
             {
-                string formattedCantidad = cantidad.ToString("N1", CultureInfo.InvariantCulture);
-                string formattedNroCajas = NroCajas.ToString("N1", CultureInfo.InvariantCulture);
+                string formattedCantidad = cantidad.ToString("D5", CultureInfo.InvariantCulture);
+                string formattedNroCajas = NroCajas.ToString("D5", CultureInfo.InvariantCulture);
 
                 if (j == 0)
                 {
@@ -517,12 +524,12 @@ namespace Exportacion
                 }
 
                 //botGuardar.IsEnabled = true;
-                //swGrabar = true;
+                sw_grabar = true;
                 txtCodigos.Text = texto;
 
                 fldCodigo.Text = "";
                 j++;
-                //Grabar();
+                Grabar(); 
             }
             else
             {
@@ -563,7 +570,38 @@ namespace Exportacion
         {
             actual = DateTime.Now;
             miFecha = actual.ToString(formatter);
-            miHora = actual.ToString(timeFormat);
+            miHora = actual.ToString("h:mm:ss tt", CultureInfo.CurrentCulture);
+        }
+
+        public async void Grabar()
+        {
+            Console.WriteLine(fldFactura.Text);
+
+            bool swError = false;
+            if (!Directory.Exists(carpeta))
+            {
+                Directory.CreateDirectory(carpeta);
+            }
+
+            string nombreArchivo = Path.Combine(carpeta,fldFactura.Text, $"despacho_{fldFactura.Text}.txt");
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(nombreArchivo, false))
+                {
+                    writer.WriteLine(texto);
+                    Console.WriteLine($"Archivo guardado exitosamente en {nombreArchivo}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocurrió un error al escribir el archivo:");
+                Console.WriteLine(ex.Message);
+                swError = true;
+            }
+
+            sw_grabar = false;
+            sw_copiar = true;
+
         }
 
         private async void OnArqueoActionPerformed(object sender, EventArgs e)

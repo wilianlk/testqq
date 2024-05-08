@@ -16,14 +16,6 @@
 
             <StackLayout Orientation="Horizontal">
 
-                <Button 
-                    Text="Botón con bordes redondeados"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    BackgroundColor="#3498DB"
-                    CornerRadius="20"
-                    Padding="15"/>
-                
                 <Button Text="Otras Fotos" 
                         HorizontalOptions="Center"
                         Margin="5"
@@ -72,10 +64,16 @@
                    Completed="OnfldNroCajasCompleted">
             </Entry>
 
-            <Entry HorizontalOptions="FillAndExpand"
+            <!--<Entry HorizontalOptions="FillAndExpand"
                    x:Name="txtCodigos"
                    IsEnabled="False">
-            </Entry>
+            </Entry>-->
+
+            <Editor
+                    HeightRequest="200"  
+                    x:Name="txtCodigos"
+                    IsEnabled="False"
+                    AutoSize="TextChanges" />
 
             <Grid>
                 <Grid.ColumnDefinitions>
