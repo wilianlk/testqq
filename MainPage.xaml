@@ -2,16 +2,31 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              Title="Exportacion"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Exportacion.MainPage">
+             x:Class="Exportacion.MainPage"
+             xmlns:local="clr-namespace:Exportacion"
+             >
 
     <ScrollView>
+        
         <VerticalStackLayout
+            Spacing="25"
             Padding="30,0"
-            Spacing="25">
+            Margin="0,25">
 
             <StackLayout>
                 <Label Text="Recamier S.A" Style="{StaticResource Headline}"></Label>
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
+            </StackLayout>
+
+            <local:BorderlessEntry Placeholder="Enter" />
+            
+            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                <local:BorderlessEntry Placeholder="Enter" />
+            </Frame>
+
+            <StackLayout>
+                <local:BorderlessEntry Placeholder="Enter" />
+                <BoxView HeightRequest="1" Color="LightGray" />
             </StackLayout>
 
             <StackLayout Orientation="Horizontal">
@@ -120,6 +135,8 @@
             </Label>
 
         </VerticalStackLayout>
+        
     </ScrollView>
 
+    
 </ContentPage>

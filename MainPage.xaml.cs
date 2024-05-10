@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
+using CommunityToolkit.Maui.Views;
+
 
 namespace Exportacion
 {
@@ -228,12 +230,12 @@ namespace Exportacion
                             }
                             texto += "\n";
                         }
-                        
+
                     }
                 }
                 catch (Exception ee)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Error leyendo archivo de despacho: " + ee.Message, "OK");
+                    //await Application.Current.MainPage.DisplayAlert("Error", "Error leyendo archivo de despacho: " + ee.Message, "OK");
                 }
             }
 
@@ -287,42 +289,58 @@ namespace Exportacion
                 Directory.CreateDirectory(nomCarpetaFotos);
             }
 
-            string[] listado = Directory.GetFiles(nomCarpetaFotos);
-            if (listado == null || listado.Length == 0)
+            string currentTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            if (tipoFoto == "I")
             {
-                DisplayAlert("Alerta", "No se encontraron fotos!", "OK");
-                fldCodigo.Focus();
-                return false;
-            }
-            else
-            {
-                string currentTime = DateTime.Now.ToString("HHmmss");
-                for (int i = 0; i < listado.Length; i++)
+                // Asegúrate de que el directorio existe antes de intentar obtener archivos de él.
+                if (!Directory.Exists(nomCarpetaDestinoFotos))
                 {
-                    string archivoOrigen = listado[i];
-                    string nombreFoto = "";
+                    Directory.CreateDirectory(nomCarpetaDestinoFotos);
+                }
 
-                    if (tipoFoto == "I")
-                    {
-                        nombreFoto = Path.Combine(nomCarpetaDestinoFotos,
-                            $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, 6)}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{i}.jpg");
-                    }
-                    else if (tipoFoto == "O")
-                    {
-                        nombreFoto = Path.Combine(nomCarpetaDestinoFotos,
-                            $"{fldFactura.Text}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{i}.jpg");
-                    }
+                string[] listado_i = Directory.GetFiles(nomCarpetaDestinoFotos);
+                for (int a = 0; a < listado_i.Length; a++)
+                {
+                    // Construye el nombre del archivo con formato y parámetros específicos.
+                    string nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
+                        $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
 
-                    try
-                    {
-                        File.Move(archivoOrigen, nombreFoto, true);
-                        Console.WriteLine("OK");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error al mover el archivo: {ex.Message}");
-                    }
+                    Task.Run(() => CaptureAndHandlePhotoAsync(nombreFoto_i));
+                }
+            }else
+            {
+                string[] listado = Directory.GetFiles(nomCarpetaFotos);
 
+                if (listado == null || listado.Length == 0)
+                {
+                    DisplayAlert("Alerta", "No se encontraron fotos!", "OK");
+                    fldCodigo.Focus();
+                    return false;
+                }
+                else
+                {
+
+                    for (int i = 0; i < listado.Length; i++)
+                    {
+                        string archivoOrigen = listado[i];
+                        string nombreFoto = "";
+
+                        if (tipoFoto == "O")
+                        {
+                            nombreFoto = Path.Combine(nomCarpetaDestinoFotos,
+                                $"{fldFactura.Text}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{i}.jpg");
+
+                            try
+                            {
+                                File.Move(archivoOrigen, nombreFoto, true);
+                                Console.WriteLine("OK");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error al mover el archivo: {ex.Message}");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -350,6 +368,7 @@ namespace Exportacion
                 {
                     await Application.Current.MainPage.DisplayAlert("Alerta", "¡Item no existe en esta importación!", "OK");
                     fldCodigo.Text = "";
+                    fldNroCajas.Text = "";
                     fldCodigo.Focus();
                     return;
                 }
@@ -368,7 +387,7 @@ namespace Exportacion
 
         private string LeeItem(string codigo)
         {
-            string descripcion = null,cod;
+            string descripcion = null, cod;
             int i;
 
             Console.WriteLine("Lee item: " + codigo);
@@ -467,10 +486,9 @@ namespace Exportacion
                 return;
             }
 
-            int wNroCajas = int.Parse(fldNroCajas.Text);
-            if (wNroCajas == 0)
+            if (!int.TryParse(fldNroCajas.Text, out int wNroCajas) || wNroCajas < 1)
             {
-                await DisplayAlert("Atención", "Ojo cantidad en cero", "OK");
+                await DisplayAlert("Atención", "Ojo cantidad en cero o no válida", "OK");
                 fldNroCajas.Text = "0";
                 fldNroCajas.Focus();
                 return;
@@ -529,7 +547,7 @@ namespace Exportacion
 
                 fldCodigo.Text = "";
                 j++;
-                Grabar(); 
+                Grabar();
             }
             else
             {
@@ -571,37 +589,6 @@ namespace Exportacion
             actual = DateTime.Now;
             miFecha = actual.ToString(formatter);
             miHora = actual.ToString("h:mm:ss tt", CultureInfo.CurrentCulture);
-        }
-
-        public async void Grabar()
-        {
-            Console.WriteLine(fldFactura.Text);
-
-            bool swError = false;
-            if (!Directory.Exists(carpeta))
-            {
-                Directory.CreateDirectory(carpeta);
-            }
-
-            string nombreArchivo = Path.Combine(carpeta,fldFactura.Text, $"despacho_{fldFactura.Text}.txt");
-            try
-            {
-                using (StreamWriter writer = new StreamWriter(nombreArchivo, false))
-                {
-                    writer.WriteLine(texto);
-                    Console.WriteLine($"Archivo guardado exitosamente en {nombreArchivo}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Ocurrió un error al escribir el archivo:");
-                Console.WriteLine(ex.Message);
-                swError = true;
-            }
-
-            sw_grabar = false;
-            sw_copiar = true;
-
         }
 
         private async void OnArqueoActionPerformed(object sender, EventArgs e)
@@ -665,16 +652,104 @@ namespace Exportacion
 
         private void OnLimpiarClicked(object sender, EventArgs e)
         {
+            if (sw_grabar)
+            {
+                Grabar();
+            }
+
+            texto = null;
+            j = 0;
+            cantidad = 0;
+            total = 0;
+            totalRemision = 0;
+
             fldFactura.Text = "";
+            txtCodigos.Text = "";
             fldCodigo.Text = "";
+            fldCajas.Text = "";
+            fldUnidades.Text = "";
+            fldNroCajas.Text = "";
+
+            //botGuardar.IsEnabled = true;
+            fldCodigo.IsReadOnly = true;
+            fldFactura.Focus();
+        }
+
+        public async void Grabar()
+        {
+            Console.WriteLine(fldFactura.Text);
+
+            bool swError = false;
+            if (!Directory.Exists(carpeta))
+            {
+                Directory.CreateDirectory(carpeta);
+            }
+
+            string nombreArchivo = Path.Combine(carpeta, fldFactura.Text, $"despacho_{fldFactura.Text}.txt");
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(nombreArchivo, false))
+                {
+                    writer.WriteLine(texto);
+                    Console.WriteLine($"Archivo guardado exitosamente en {nombreArchivo}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocurrió un error al escribir el archivo:");
+                Console.WriteLine(ex.Message);
+                swError = true;
+            }
+
+            sw_grabar = false;
+            sw_copiar = true;
+
         }
 
         private void OnSalirClicked(object sender, EventArgs e)
         {
-            #if WINDOWS
-                Application.Current?.CloseWindow(Application.Current.MainPage.Window);
-            #endif
+#if WINDOWS
+            Application.Current?.CloseWindow(Application.Current.MainPage.Window);
+#endif
         }
+
+        private async Task CaptureAndHandlePhotoAsync(string filePath)
+{
+    try
+    {
+        var photoResult = await MediaPicker.CapturePhotoAsync(null);
+        if (photoResult == null)
+        {
+            Console.WriteLine("No photo captured.");
+            return;
+        }
+
+        string directory = Path.GetDirectoryName(filePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        using (var stream = await photoResult.OpenReadAsync())
+        using (var newStream = File.OpenWrite(filePath))
+        {
+            await stream.CopyToAsync(newStream);
+        }
+        
+        Console.WriteLine($"Photo saved to {filePath}");
+    }
+    catch (IOException ex)
+    {
+        DisplayAlert("", $"File error: {ex.Message}", "OK");
+    }
+    catch (Exception ex)
+    {
+        DisplayAlert("", $"An unexpected error occurred: {ex.Message}", "OK");
+    }
+}
+
+
+
 
     }
 
