@@ -1,4 +1,8 @@
 ﻿using CommunityToolkit.Maui;
+using Exportacion.Services;
+using Exportacion.ViewModels;
+using Exportacion.Views;
+using Exportacion.Views.Seguimiento;
 using Microsoft.Extensions.Logging;
 
 namespace Exportacion
@@ -20,6 +24,16 @@ namespace Exportacion
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+            //Services
+            builder.Services.AddSingleton<ISeguimientoService,SeguimientoService>();
+
+            // View Registration
+            builder.Services.AddSingleton<SeguimientoListPage>();
+            builder.Services.AddSingleton<AddUpdateSeguimientoDetail>();
+
+            //view Models
+            builder.Services.AddSingleton<SeguimientoListPageViewModel>();
+            builder.Services.AddSingleton<AddUpdateSeguimientoDetailViewModel>();
 
             return builder.Build();
         }

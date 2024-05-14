@@ -1,4 +1,6 @@
-﻿namespace Exportacion
+﻿using Exportacion.Views;
+
+namespace Exportacion
 {
     public partial class App : Application
     {
