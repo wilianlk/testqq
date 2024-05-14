@@ -11,6 +11,7 @@ namespace Exportacion.Models
     {
         [PrimaryKey,AutoIncrement]
         public int Id_seguimiento { get; set; }
+        public string Exportacion {  get; set; }
         public string Nro_exportacion { get; set; }
         public string Fecha { get; set; }
         public string Cliente_Filial { get; set; }

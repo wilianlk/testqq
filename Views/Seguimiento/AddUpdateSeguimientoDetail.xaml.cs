@@ -7,6 +7,6 @@ public partial class AddUpdateSeguimientoDetail : ContentPage
 	public AddUpdateSeguimientoDetail(AddUpdateSeguimientoDetailViewModel viewModel)
 	{
 		InitializeComponent();
-		this.BindingContext = viewModel;
+		this.BindingContext = viewModel; 
 	}
 }

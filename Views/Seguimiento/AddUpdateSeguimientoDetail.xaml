@@ -3,19 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Exportacion.Views.Seguimiento.AddUpdateSeguimientoDetail"
              Title="AddUpdateSeguimientoDetail">
-    <StackLayout Margin="10">
-        <Label 
-            Text=""
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            FontSize="18"
-            />
-        <Entry
-            Placeholder="(mm/dd/aaa)"
-            />
-        <BoxView
-            HeightRequest="0.8"
-            Color="Gray"
-            />
+    
+    <StackLayout Margin="10" Spacing="15">
+        <VerticalStackLayout>
+            <Label Text="Exportacion"  />
+            <Entry Text="{Binding SeguimientoDetail.FirstName}" Placeholder="Exportacion" />
+            <BoxView HeightRequest="0.8" Color="Gray" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout>
+            <Label Text="Fecha"  />
+            <Entry Text="{Binding SeguimientoDetail.FirstName}" Placeholder="Fecha ()" />
+            <BoxView HeightRequest="0.8" Color="Gray" />
+        </VerticalStackLayout>
     </StackLayout>
 </ContentPage>

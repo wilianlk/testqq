@@ -29,11 +29,11 @@ namespace Exportacion
 
             // View Registration
             builder.Services.AddSingleton<SeguimientoListPage>();
-            builder.Services.AddSingleton<AddUpdateSeguimientoDetail>();
+            builder.Services.AddTransient<AddUpdateSeguimientoDetail>();
 
             //view Models
             builder.Services.AddSingleton<SeguimientoListPageViewModel>();
-            builder.Services.AddSingleton<AddUpdateSeguimientoDetailViewModel>();
+            builder.Services.AddTransient<AddUpdateSeguimientoDetailViewModel>();
 
             return builder.Build();
         }

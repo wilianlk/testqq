@@ -8,7 +8,7 @@ namespace Exportacion
         {
             InitializeComponent();
 
-            Routing.RegisterRoute(nameof(AddUpdateSeguimientoDetail),typeof(AddUpdateSeguimientoDetail));
+            Routing.RegisterRoute(nameof(AddUpdateSeguimientoDetail), typeof(AddUpdateSeguimientoDetail));
         }
     }
 }

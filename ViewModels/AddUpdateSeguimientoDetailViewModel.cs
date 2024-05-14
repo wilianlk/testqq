@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Exportacion.Models;
+using Exportacion.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +10,46 @@ using System.Threading.Tasks;
 
 namespace Exportacion.ViewModels
 {
-    public class AddUpdateSeguimientoDetailViewModel
+    [QueryProperty(nameof(SeguimientoDetail), "SeguimientoDetail")]
+    public partial class AddUpdateSeguimientoDetailViewModel : ObservableObject
     {
+        [ObservableProperty]
+        private SeguimientoModel _seguimientoDetail = new SeguimientoModel();
+
+        private readonly ISeguimientoService _seguimientoService;
+        public AddUpdateSeguimientoDetailViewModel(ISeguimientoService seguimientoService)
+        {
+            _seguimientoService = seguimientoService;
+        }
+
+        [RelayCommand]
+        public async void AddUpdateSeguimiento()
+        {
+            int response = -1;
+            if (SeguimientoDetail.Id_seguimiento > 0)
+            {
+                response = await _seguimientoService.UpdateStudent(StudentDetail);
+            }
+            else
+            {
+                response = await _seguimientoService.AddSeguimiento(new Models.SeguimientoModel
+                {
+                    Exportacion = SeguimientoDetail.Exportacion,
+                    Fecha = SeguimientoDetail.Fecha,
+
+                });
+            }
+
+            if (response > 0)
+            {
+                await Shell.Current.DisplayAlert("Student Info Saved", "Record Saved", "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Heads Up!", "Something went wrong while adding record", "OK");
+            }
+        }
+
 
     }
 }
