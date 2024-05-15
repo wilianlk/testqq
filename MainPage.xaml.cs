@@ -382,7 +382,6 @@ namespace Exportacion
                 }
             }
         }
-
         private string LeeItem(string codigo)
         {
             string descripcion = null, cod;
@@ -420,7 +419,6 @@ namespace Exportacion
             Console.WriteLine("Descripción: " + descripcion);
             return descripcion;
         }
-
         private int LeeCantFactura(string codigo)
         {
             int cantidadRemision = 0;
@@ -446,7 +444,6 @@ namespace Exportacion
 
             return cantidadRemision;
         }
-
         private int LeeCantReal(string codigo)
         {
             int cantidadRemision = 0;
@@ -472,7 +469,6 @@ namespace Exportacion
 
             return cantidadRemision;
         }
-
         private async void OnfldNroCajasCompleted(object sender, EventArgs e)
         {
 
