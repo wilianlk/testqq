@@ -7,8 +7,7 @@
              >
 
     <ScrollView>
-        
-        <VerticalStackLayout
+        <StackLayout
             Spacing="25"
             Padding="30,0"
             Margin="0,25">
@@ -18,125 +17,119 @@
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
             </StackLayout>
 
-            <local:BorderlessEntry Placeholder="Enter" />
-            
-            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
-                <local:BorderlessEntry Placeholder="Enter" />
-            </Frame>
-
-            <StackLayout>
-                <local:BorderlessEntry Placeholder="Enter" />
-                <BoxView HeightRequest="1" Color="LightGray" />
-            </StackLayout>
-
             <StackLayout Orientation="Horizontal">
+
+                <Button Text="Formulario De Seguimiento" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OnFormularioDeSeguimientoClicked"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" />
+
+                <Button Text="Formulario De Inspeccion" 
+                        HorizontalOptions="Center"
+                        Margin="5"
+                        Clicked="OnFormularioDeSeguimientoClicked"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" /> 
 
                 <Button Text="Otras Fotos" 
                         HorizontalOptions="Center"
                         Margin="5"
-                        Clicked="OntGuardarAction"/>
+                        Clicked="OntGuardarAction"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" /> 
+
                 <Button Text="Limpiar" 
                         HorizontalOptions="Center"
                         Margin="5"
-                        Clicked="OnLimpiarClicked"/>
+                        Clicked="OnLimpiarClicked"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" />     
+
                 <Button Text="Arqueo" 
                         HorizontalOptions="Center"
                         Margin="5"
-                        Clicked="OnArqueoActionPerformed"/>
+                        Clicked="OnArqueoActionPerformed"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" />     
+
                 <Button Text="Salir" 
                         HorizontalOptions="Center"
                         Margin="5"
-                        Clicked="OnSalirClicked"/>
+                        Clicked="OnSalirClicked"
+                        WidthRequest="150"
+                        HeightRequest="70"
+                        TextTransform="None"
+                        LineBreakMode="WordWrap" />
             </StackLayout>
 
-            <Label Text="Archivo Exportacion"
-                   HorizontalOptions="Center">
+            <Label Text="Archivo de Exportacion"
+                    HorizontalOptions="StartAndExpand">
             </Label>
 
-            <Entry HorizontalOptions="FillAndExpand"
-                   x:Name="fldFactura"
-                   Completed="Archivo_Completed"
-                   >
-            </Entry>
+            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                <local:BorderlessEntry Placeholder="Archivo Exportacion" x:Name="fldFactura" Completed="Archivo_Completed" />
+            </Frame>
 
             <Label Text="Codigo Item"
-                   HorizontalOptions="Center">
+                   HorizontalOptions="StartAndExpand">
             </Label>
 
-            <Entry HorizontalOptions="FillAndExpand"
-                   x:Name="fldCodigo"
-                   IsEnabled="False"
-                   Completed="OnfldCodigoCompleted">
-            </Entry>
+            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                <local:BorderlessEntry Placeholder="Codigo Item" x:Name="fldCodigo" Completed="OnfldCodigoCompleted"  IsEnabled="False" />
+            </Frame>
 
             <Label Text="Cantidad de Cajas"
-                    HorizontalOptions="Center">
+                   HorizontalOptions="StartAndExpand">
             </Label>
 
-            <Entry HorizontalOptions="FillAndExpand"
-                   x:Name="fldNroCajas"
-                   IsEnabled="False"
-                   Completed="OnfldNroCajasCompleted">
-            </Entry>
-
-            <!--<Entry HorizontalOptions="FillAndExpand"
-                   x:Name="txtCodigos"
-                   IsEnabled="False">
-            </Entry>-->
+            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                <local:BorderlessEntry Placeholder="Cantidad de Cajas" x:Name="fldNroCajas" Completed="OnfldNroCajasCompleted"  IsEnabled="False" />
+            </Frame>
 
             <Editor
-                    HeightRequest="200"  
-                    x:Name="txtCodigos"
-                    IsEnabled="False"
-                    AutoSize="TextChanges" />
+                HeightRequest="200"  
+                x:Name="txtCodigos"
+                IsEnabled="False"
+                AutoSize="TextChanges" />
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="Total Cajas" FontAttributes="Bold" VerticalOptions="Center" />
+                    <local:BorderlessEntry x:Name="fldCajas" Text="0" IsReadOnly="False" WidthRequest="70" VerticalOptions="Center" />
+                </HorizontalStackLayout>
 
-                <Label Text="Total Cajas" />
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="Total Unidades" FontAttributes="Bold" VerticalOptions="Center" />
+                    <local:BorderlessEntry x:Name="fldUnidades" Text="0" IsReadOnly="False" WidthRequest="100" VerticalOptions="Center" />
+                </HorizontalStackLayout>
 
-                <Entry Grid.Column="1"
-                       Margin="0"
-                       HorizontalOptions="FillAndExpand"
-                       x:Name="fldCajas"
-                       Text="0"
-                       IsReadOnly="False"
-                       WidthRequest="70" />
-            </Grid>
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded" />
+                    <Label x:Name="Usuario" Loaded="OnTimeLoaded" />
+                    <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded" />
+                </HorizontalStackLayout>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            </HorizontalStackLayout>
 
-                <Label Text="Total Unidades">
-                </Label>
+            <!--<StackLayout>
+                <local:BorderlessEntry Placeholder="Enter" />
+                <BoxView HeightRequest="1" Color="LightGray" />
+            </StackLayout>-->
 
-                <Entry Grid.Column="1"
-                       Margin="0"
-                       HorizontalOptions="FillAndExpand"
-                       x:Name="fldUnidades"
-                       Text="0"
-                       IsReadOnly="False"
-                       WidthRequest="150" />
-            </Grid>
+            <!--<local:BorderlessEntry Placeholder="Archivo Exportacion" />-->
 
-            <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded">
-            </Label>
-
-            <Label x:Name="Usuario" Loaded="OnTimeLoaded">
-            </Label>
-
-            <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded">
-            </Label>
-
-        </VerticalStackLayout>
-        
+        </StackLayout>
     </ScrollView>
-
-    
 </ContentPage>

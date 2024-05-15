@@ -303,7 +303,7 @@ namespace Exportacion
                     string nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
                         $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
 
-                    Task.Run(() => CaptureAndHandlePhotoAsync(nombreFoto_i));
+                    //Task.Run(() => CaptureAndHandlePhotoAsync(nombreFoto_i));
                 }
             }else
             {
@@ -746,6 +746,10 @@ namespace Exportacion
             }
         }
 
+        private async void OnFormularioDeSeguimientoClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("seguimientoList");
+        }
 
     }
 
