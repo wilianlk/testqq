@@ -28,7 +28,7 @@ namespace Exportacion.ViewModels
             int response = -1;
             if (SeguimientoDetail.Id_seguimiento > 0)
             {
-                response = await _seguimientoService.UpdateStudent(StudentDetail);
+                response = await _seguimientoService.UpdateSeguimiento(SeguimientoDetail);
             }
             else
             {
@@ -42,11 +42,14 @@ namespace Exportacion.ViewModels
 
             if (response > 0)
             {
-                await Shell.Current.DisplayAlert("Student Info Saved", "Record Saved", "OK");
+                await Shell.Current.DisplayAlert("Seguimiento Informacion Guardada", "Registro Guardado", "OK");
+                await Shell.Current.GoToAsync("seguimientoList");
+                await _seguimientoService.GetSeguimientoList();
+
             }
             else
             {
-                await Shell.Current.DisplayAlert("Heads Up!", "Something went wrong while adding record", "OK");
+                await Shell.Current.DisplayAlert("¡Aviso!", "Algo salio mal al agregar el registro", "OK");
             }
         }
 

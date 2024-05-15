@@ -292,7 +292,6 @@ namespace Exportacion
             string currentTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             if (tipoFoto == "I")
             {
-                // Asegúrate de que el directorio existe antes de intentar obtener archivos de él.
                 if (!Directory.Exists(nomCarpetaDestinoFotos))
                 {
                     Directory.CreateDirectory(nomCarpetaDestinoFotos);
@@ -301,7 +300,6 @@ namespace Exportacion
                 string[] listado_i = Directory.GetFiles(nomCarpetaDestinoFotos);
                 for (int a = 0; a < listado_i.Length; a++)
                 {
-                    // Construye el nombre del archivo con formato y parámetros específicos.
                     string nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
                         $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
 
@@ -714,41 +712,39 @@ namespace Exportacion
         }
 
         private async Task CaptureAndHandlePhotoAsync(string filePath)
-{
-    try
-    {
-        var photoResult = await MediaPicker.CapturePhotoAsync(null);
-        if (photoResult == null)
         {
-            Console.WriteLine("No photo captured.");
-            return;
-        }
+            try
+            {
+                var photoResult = await MediaPicker.CapturePhotoAsync(null);
+                if (photoResult == null)
+                {
+                    Console.WriteLine("No photo captured.");
+                    return;
+                }
 
-        string directory = Path.GetDirectoryName(filePath);
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
+                string directory = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
 
-        using (var stream = await photoResult.OpenReadAsync())
-        using (var newStream = File.OpenWrite(filePath))
-        {
-            await stream.CopyToAsync(newStream);
-        }
+                using (var stream = await photoResult.OpenReadAsync())
+                using (var newStream = File.OpenWrite(filePath))
+                {
+                    await stream.CopyToAsync(newStream);
+                }
         
-        Console.WriteLine($"Photo saved to {filePath}");
-    }
-    catch (IOException ex)
-    {
-        DisplayAlert("", $"File error: {ex.Message}", "OK");
-    }
-    catch (Exception ex)
-    {
-        DisplayAlert("", $"An unexpected error occurred: {ex.Message}", "OK");
-    }
-}
-
-
+                Console.WriteLine($"Photo saved to {filePath}");
+            }
+            catch (IOException ex)
+            {
+                DisplayAlert("", $"File error: {ex.Message}", "OK");
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("", $"An unexpected error occurred: {ex.Message}", "OK");
+            }
+        }
 
 
     }

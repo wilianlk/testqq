@@ -7,14 +7,16 @@
     <StackLayout Margin="10" Spacing="15">
         <VerticalStackLayout>
             <Label Text="Exportacion"  />
-            <Entry Text="{Binding SeguimientoDetail.FirstName}" Placeholder="Exportacion" />
+            <Entry Text="{Binding SeguimientoDetail.Exportacion}" Placeholder="Exportacion" />
             <BoxView HeightRequest="0.8" Color="Gray" />
         </VerticalStackLayout>
 
         <VerticalStackLayout>
             <Label Text="Fecha"  />
-            <Entry Text="{Binding SeguimientoDetail.FirstName}" Placeholder="Fecha ()" />
+            <Entry Text="{Binding SeguimientoDetail.Fecha}" Placeholder="Fecha ()" />
             <BoxView HeightRequest="0.8" Color="Gray" />
         </VerticalStackLayout>
+
+        <Button Text="Guardar" Command="{Binding AddUpdateSeguimientoCommand}"/>
     </StackLayout>
 </ContentPage>

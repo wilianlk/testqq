@@ -5,18 +5,16 @@
              xmlns:viewModels="clr-namespace:Exportacion.ViewModels"
              x:DataType="viewModels:SeguimientoListPageViewModel"
              x:Class="Exportacion.Views.Seguimiento.SeguimientoListPage"
-             Title="SeguimientoListPage">
+             Title="Formulario de Seguimiento">
+    
     <StackLayout Margin="10">
-        <Label 
-            Text=""
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+       
         <Button Text="Agregar Seguimiento" Command="{Binding AddUpdateSeguimientoCommand}" HorizontalOptions="StartAndExpand" />
 
         <CollectionView ItemsSource="{Binding Seguimiento}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SeguimientoModel">
-                    <SwipeItems>
+                    <!--<SwipeItems>
                         <SwipeItemView>
                             <VerticalStackLayout BackgroundColor="LightBlue" >
                                 <Label Text="Edit" 
@@ -29,7 +27,21 @@
                                 <Label Text="Delete" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontAttributes="Bold" TextColor="White" />
                             </VerticalStackLayout>
                         </SwipeItemView>
-                    </SwipeItems>
+                    </SwipeItems>-->
+                    <Frame>
+                        <StackLayout>
+                            <HorizontalStackLayout Spacing="15">
+                                <Label Text="{Binding Exportacion}" FontSize="20" FontAttributes="Bold"></Label>
+                                <Label Text="{Binding Fecha}" FontSize="20" FontAttributes="Bold"></Label>
+                            </HorizontalStackLayout>
+                        </StackLayout>
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewModels:SeguimientoListPageViewModel}},Path=DisplayActionCommand}"
+                                                  CommandParameter="{Binding .}">
+                                
+                            </TapGestureRecognizer>
+                        </Frame.GestureRecognizers>
+                    </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

@@ -18,9 +18,9 @@ namespace Exportacion
                 handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
                 handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #elif WINDOWS
-                handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
-                handler.PlatformView.Background = null;
-                handler.PlatformView.FocusVisualMargin = new Microsoft.UI.Xaml.Thickness(0);
+                //handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+                //handler.PlatformView.Background = null;
+                //handler.PlatformView.FocusVisualMargin = new Microsoft.UI.Xaml.Thickness(0);
 #endif
             }); 
         }
