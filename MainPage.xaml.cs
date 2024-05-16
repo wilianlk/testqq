@@ -694,7 +694,6 @@ namespace Exportacion
                         }
                     }
 
-                    // Guardar el archivo de Excel
                     FileInfo excelFile = new FileInfo(nombreArchivoExcel);
                     excel.SaveAs(excelFile);
                     Console.WriteLine($"Archivo de Excel guardado exitosamente en {nombreArchivoExcel}");
