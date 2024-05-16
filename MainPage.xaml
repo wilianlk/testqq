@@ -17,62 +17,61 @@
                 <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
             </StackLayout>
 
-            <StackLayout Orientation="Horizontal">
-
+            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
                 <Button Text="Formulario De Seguimiento" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OnFormularioDeSeguimientoClicked"
-                        WidthRequest="150"
-                        HeightRequest="70"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap" />
+				        Margin="3" 
+				        Padding="2"
+				        WidthRequest="140"
+				        HeightRequest="60"
+				        TextTransform="None"
+				        LineBreakMode="WordWrap"
+				        Clicked="OnFormularioDeSeguimientoClicked" />
 
                 <Button Text="Formulario De Inspeccion" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OnBuscarFileInspeccion"
-                        WidthRequest="150"
-                        HeightRequest="70"
+                        Margin="3" 
+                        Padding="2"
+                        WidthRequest="140"
+                        HeightRequest="60"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" /> 
+                        LineBreakMode="WordWrap"
+                        Clicked="OnBuscarFileInspeccion" />
 
                 <Button Text="Otras Fotos" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OntGuardarAction"
-                        WidthRequest="150"
-                        HeightRequest="70"
+                        Margin="3" 
+                        Padding="2"
+                        WidthRequest="140"
+                        HeightRequest="60"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" /> 
+                        LineBreakMode="WordWrap"
+                        Clicked="OntGuardarAction" />
 
                 <Button Text="Limpiar" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OnLimpiarClicked"
-                        WidthRequest="150"
-                        HeightRequest="70"
+                        Margin="3" 
+                        Padding="2"
+                        WidthRequest="140"
+                        HeightRequest="60"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" />     
+                        LineBreakMode="WordWrap"
+                        Clicked="OnLimpiarClicked" />
 
                 <Button Text="Arqueo" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OnArqueoActionPerformed"
-                        WidthRequest="150"
-                        HeightRequest="70"
+                        Margin="3" 
+                        Padding="2"
+                        WidthRequest="140"
+                        HeightRequest="60"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" />
+                        LineBreakMode="WordWrap"
+                        Clicked="OnArqueoActionPerformed" />
 
                 <Button Text="Salir" 
-                        HorizontalOptions="Center"
-                        Margin="5"
-                        Clicked="OnSalirClicked"
-                        WidthRequest="150"
-                        HeightRequest="70"
+                        Margin="3" 
+                        Padding="2"
+                        WidthRequest="140"
+                        HeightRequest="60"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" />
-            </StackLayout>
+                        LineBreakMode="WordWrap"
+                        Clicked="OnSalirClicked" />
+            </FlexLayout>
 
             <Label Text="Archivo de Exportacion"
                     HorizontalOptions="StartAndExpand">
@@ -98,11 +97,22 @@
                 <local:BorderlessEntry Placeholder="Cantidad de Cajas" x:Name="fldNroCajas" Completed="OnfldNroCajasCompleted"  IsEnabled="False" />
             </Frame>
 
-            <Editor
-                HeightRequest="200"  
-                x:Name="txtCodigos"
-                IsEnabled="False"
-                AutoSize="TextChanges" />
+            <StackLayout>
+                <Frame HasShadow="False" 
+                       BorderColor="Gray" 
+                       CornerRadius="5">
+                    <Editor HeightRequest="200"  
+                            x:Name="txtCodigos"
+                            IsEnabled="False"
+                            AutoSize="TextChanges"
+                            CursorPosition="10"
+                            SelectionLength="3"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            FontSize="16"
+                            VerticalTextAlignment="Start"/>
+                </Frame>
+            </StackLayout>
 
             <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
@@ -129,6 +139,8 @@
             </StackLayout>-->
 
             <!--<local:BorderlessEntry Placeholder="Archivo Exportacion" />-->
+
+            <Image x:Name="imgFoto" />
 
         </StackLayout>
     </ScrollView>

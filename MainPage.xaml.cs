@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
 using CommunityToolkit.Maui.Views;
+using OfficeOpenXml;
 
 
 namespace Exportacion
@@ -42,6 +43,8 @@ namespace Exportacion
 
         string carpeta;
         string carpeta_copia = @"C:\Recamier\Archivos\Copia";
+
+        private bool isCapturingPhoto = false;
 
         public MainPage()
         {
@@ -255,18 +258,19 @@ namespace Exportacion
 
             await DisplayAlert("Información", "Favor tome las fotos y al terminar de tomarlas presione Aceptar", "OK");
 
-            if (!Fotos("O"))
+            bool result = await Fotos("O");
+            if (!result)
             {
-
+                await DisplayAlert("Error", "Hubo un problema al tomar las fotos.", "OK");
             }
 
             fldCodigo.Focus();
         }
-        public bool Fotos(string tipoFoto)
+        public async Task<bool> Fotos(string tipoFoto)
         {
             if (fldFactura.Text.Length < 2)
             {
-                DisplayAlert("Alerta", "No se ha dado nombre de exportación!", "OK");
+                await DisplayAlert("Alerta", "No se ha dado nombre de exportación!", "OK");
                 return false;
             }
 
@@ -294,21 +298,21 @@ namespace Exportacion
                     string nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
                         $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
 
-                    //Task.Run(() => CaptureAndHandlePhotoAsync(nombreFoto_i));
+                    //await CaptureAndHandlePhotoAsync(nombreFoto_i);
                 }
-            }else
+            }
+            else
             {
                 string[] listado = Directory.GetFiles(nomCarpetaFotos);
 
                 if (listado == null || listado.Length == 0)
                 {
-                    DisplayAlert("Alerta", "No se encontraron fotos!", "OK");
+                    await DisplayAlert("Alerta", "No se encontraron fotos!", "OK");
                     fldCodigo.Focus();
                     return false;
                 }
                 else
                 {
-
                     for (int i = 0; i < listado.Length; i++)
                     {
                         string archivoOrigen = listado[i];
@@ -366,12 +370,14 @@ namespace Exportacion
                 fldNroCajas.Text = "0";
 
                 await Application.Current.MainPage.DisplayAlert("Instrucción", "Favor tome las fotos y al terminar de tomarlas presione Aceptar", "OK");
-                if (Fotos("I"))
+                bool result = await Fotos("I");
+                if (result)
                 {
                     fldNroCajas.Focus();
                 }
             }
         }
+
         private string LeeItem(string codigo)
         {
             string descripcion = null, cod;
@@ -435,8 +441,6 @@ namespace Exportacion
         private int LeeCantReal(string codigo)
         {
             int cantidadRemision = 0;
-
-            Console.WriteLine("lee cant despachada item " + codigo);
 
             for (int l = 0; l < ar_codigos.Length; l++)
             {
@@ -661,6 +665,8 @@ namespace Exportacion
             }
 
             string nombreArchivo = Path.Combine(carpeta, fldFactura.Text, $"despacho_{fldFactura.Text}.txt");
+            string nombreArchivoExcel = Path.Combine(carpeta, fldFactura.Text, $"despacho_{fldFactura.Text}.xlsx");
+
             try
             {
                 using (StreamWriter writer = new StreamWriter(nombreArchivo, false))
@@ -668,6 +674,32 @@ namespace Exportacion
                     writer.WriteLine(texto);
                     Console.WriteLine($"Archivo guardado exitosamente en {nombreArchivo}");
                 }
+
+                string[] lineas = File.ReadAllLines(nombreArchivo);
+                // Establecer el contexto de la licencia de EPPlus antes de crear una instancia de ExcelPackage
+
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using (ExcelPackage excel = new ExcelPackage())
+                {
+                    var hoja = excel.Workbook.Worksheets.Add("Despacho");
+
+                    for (int i = 0; i < lineas.Length; i++)
+                    {
+                        var columnas = lineas[i].Split('|');
+
+                        for (int j = 0; j < columnas.Length; j++)
+                        {
+                            hoja.Cells[i + 1, j + 1].Value = columnas[j];
+                        }
+                    }
+
+                    // Guardar el archivo de Excel
+                    FileInfo excelFile = new FileInfo(nombreArchivoExcel);
+                    excel.SaveAs(excelFile);
+                    Console.WriteLine($"Archivo de Excel guardado exitosamente en {nombreArchivoExcel}");
+                }
+
             }
             catch (Exception ex)
             {
@@ -690,92 +722,103 @@ namespace Exportacion
         {
             try
             {
-                var photoResult = await MediaPicker.CapturePhotoAsync(null);
-                if (photoResult == null)
+                // Verificar si la cámara está disponible
+                if (!MediaPicker.Default.IsCaptureSupported)
                 {
-                    Console.WriteLine("No photo captured.");
+                    Console.WriteLine("La captura de fotos no es soportada en este dispositivo.");
                     return;
                 }
 
+                // Capturar la foto
+                var photo = await MediaPicker.Default.CapturePhotoAsync();
+                if (photo == null)
+                {
+                    Console.WriteLine("No se capturó ninguna foto.");
+                    return;
+                }
+
+                // Crear el directorio si no existe
                 string directory = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
-                using (var stream = await photoResult.OpenReadAsync())
-                using (var newStream = File.OpenWrite(filePath))
+                // Guardar la foto en la ruta especificada
+                using (var stream = await photo.OpenReadAsync())
+                using (var newStream = File.Create(filePath))
                 {
                     await stream.CopyToAsync(newStream);
                 }
-        
-                Console.WriteLine($"Photo saved to {filePath}");
+
+                Console.WriteLine($"La foto fue procesada y guardada en: {filePath}");
             }
             catch (IOException ex)
             {
-                DisplayAlert("", $"File error: {ex.Message}", "OK");
+                Console.WriteLine($"Error de archivo: {ex.Message}");
             }
             catch (Exception ex)
             {
-                DisplayAlert("", $"An unexpected error occurred: {ex.Message}", "OK");
+                Console.WriteLine($"Ocurrió un error inesperado: {ex.Message}");
             }
         }
         private async void OnFormularioDeSeguimientoClicked(object sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("seguimientoList");
-        }
-        private async void OnFormularioBuscarFileInspeccion(object sender, EventArgs e)
-        {
-            string searchDirectory = @"C:\Recamier\Archivos\";
-            string fileName = "regis_personas.xlsx";
-            string sourcePath = Path.Combine(searchDirectory, fileName);
-
-            if (!File.Exists(sourcePath))
             {
-                Console.WriteLine("No se encontró el archivo regis_personas.xlsx.");
-                return;
+                await Shell.Current.GoToAsync("seguimientoList");
             }
-
-            if (string.IsNullOrWhiteSpace(fldFactura.Text))
+        private async void OnBuscarFileInspeccion(object sender, EventArgs e)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Seleccione un archivo Exportacion", "OK");
-                return;
-            }
+                string searchDirectory = @"C:\Recamier\Archivos\";
+                string fileName = "regis_personas.xlsx";
+                string sourcePath = Path.Combine(searchDirectory, fileName);
 
-            string folderName = Path.Combine(searchDirectory, fldFactura.Text);
-
-            if (!Directory.Exists(folderName))
-            {
-                Directory.CreateDirectory(folderName);
-            }
-
-            string newFileName = $"{fldFactura.Text}_Inspeccion.xlsx";
-            string destinationPath = Path.Combine(folderName, newFileName);
-
-            try
-            {
-                if (File.Exists(destinationPath))
+                if (!File.Exists(sourcePath))
                 {
-                    await Launcher.OpenAsync(new OpenFileRequest
-                    {
-                        File = new ReadOnlyFile(destinationPath)
-                    });
+                    Console.WriteLine("No se encontró el archivo regis_personas.xlsx.");
+                    return;
                 }
-                else
-                {
-                    File.Copy(sourcePath, destinationPath, overwrite: true);
 
-                    await Launcher.OpenAsync(new OpenFileRequest
+                if (string.IsNullOrWhiteSpace(fldFactura.Text))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Seleccione un archivo Exportacion", "OK");
+                    return;
+                }
+
+                string folderName = Path.Combine(searchDirectory, fldFactura.Text);
+
+                if (!Directory.Exists(folderName))
+                {
+                    Directory.CreateDirectory(folderName);
+                }
+
+                string newFileName = $"{fldFactura.Text}_Inspeccion.xlsx";
+                string destinationPath = Path.Combine(folderName, newFileName);
+
+                try
+                {
+                    if (File.Exists(destinationPath))
                     {
-                        File = new ReadOnlyFile(destinationPath)
-                    });
+                        await Launcher.OpenAsync(new OpenFileRequest
+                        {
+                            File = new ReadOnlyFile(destinationPath)
+                        });
+                    }
+                    else
+                    {
+                        File.Copy(sourcePath, destinationPath, overwrite: true);
+
+                        await Launcher.OpenAsync(new OpenFileRequest
+                        {
+                            File = new ReadOnlyFile(destinationPath)
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
-            }
-        }
+        
 
     }
 
