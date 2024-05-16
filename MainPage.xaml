@@ -31,7 +31,7 @@
                 <Button Text="Formulario De Inspeccion" 
                         HorizontalOptions="Center"
                         Margin="5"
-                        Clicked="OnFormularioDeSeguimientoClicked"
+                        Clicked="OnBuscarFileInspeccion"
                         WidthRequest="150"
                         HeightRequest="70"
                         TextTransform="None"
@@ -62,7 +62,7 @@
                         WidthRequest="150"
                         HeightRequest="70"
                         TextTransform="None"
-                        LineBreakMode="WordWrap" />     
+                        LineBreakMode="WordWrap" />
 
                 <Button Text="Salir" 
                         HorizontalOptions="Center"
@@ -107,12 +107,12 @@
             <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                     <Label Text="Total Cajas" FontAttributes="Bold" VerticalOptions="Center" />
-                    <local:BorderlessEntry x:Name="fldCajas" Text="0" IsReadOnly="False" WidthRequest="70" VerticalOptions="Center" />
+                    <local:BorderlessEntry x:Name="fldCajas" Text="0" IsReadOnly="False" WidthRequest="50" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                     <Label Text="Total Unidades" FontAttributes="Bold" VerticalOptions="Center" />
-                    <local:BorderlessEntry x:Name="fldUnidades" Text="0" IsReadOnly="False" WidthRequest="100" VerticalOptions="Center" />
+                    <local:BorderlessEntry x:Name="fldUnidades" Text="0" IsReadOnly="False" WidthRequest="140" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">

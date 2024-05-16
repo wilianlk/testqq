@@ -13,7 +13,6 @@ namespace Exportacion
         string miUsuario = Environment.UserName;
 
         private DateTime actual = DateTime.Now;
-
         private static readonly string formatter = "MM/dd/yyyy";
 
         string miFecha;
@@ -54,7 +53,6 @@ namespace Exportacion
             var usuarioLabel = (Label)sender;
             usuarioLabel.Text = Environment.UserName;
         }
-
         private void OnTime_DateLoaded(object sender, EventArgs e)
         {
             DateTime currentDate = DateTime.Now;
@@ -65,7 +63,6 @@ namespace Exportacion
                 time_date.Text = currentDate.ToString("d");
             }
         }
-
         private void OnTimeLoaded(object sender, EventArgs e)
         {
             DateTime currentDate = DateTime.Now;
@@ -76,7 +73,6 @@ namespace Exportacion
                 time_date.Text = currentDate.ToString("T");
             }
         }
-
         private async void Archivo_Completed(object sender, EventArgs e)
         {
             var entry = sender as Entry;
@@ -124,11 +120,8 @@ namespace Exportacion
                 }
             }
         }
-
         private async void ProcessFileConfirmation(string fileName)
         {
-            Console.WriteLine("Archivo procesado correctamente.");
-
             string folderName = fileName;
             string specificFolderPath = Path.Combine(carpeta, folderName);
             string despachoFileName = Path.Combine(specificFolderPath, $"despacho_{fileName}.txt");
@@ -251,7 +244,6 @@ namespace Exportacion
             fldCodigo.Focus();
 
         }
-
         private async void OntGuardarAction(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(fldFactura.Text) || fldFactura.Text.Length < 2)
@@ -270,7 +262,6 @@ namespace Exportacion
 
             fldCodigo.Focus();
         }
-
         public bool Fotos(string tipoFoto)
         {
             if (fldFactura.Text.Length < 2)
@@ -344,7 +335,6 @@ namespace Exportacion
 
             return true;
         }
-
         private async void OnfldCodigoCompleted(object sender, EventArgs e)
         {
             string cadena = fldCodigo.Text;
@@ -439,8 +429,6 @@ namespace Exportacion
                     cantidadRemision += cant;
                 }
             }
-
-            Console.WriteLine($"Cantidad fact {codigo} = {cantidadRemision}");
 
             return cantidadRemision;
         }
@@ -549,7 +537,6 @@ namespace Exportacion
             }
             fldCodigo.Focus();
         }
-
         private int LeeFactura(string codigo)
         {
             int l, factura = 0;
@@ -577,14 +564,12 @@ namespace Exportacion
             Console.WriteLine($"Factura: {factura}");
             return factura;
         }
-
         public void FechaHora()
         {
             actual = DateTime.Now;
             miFecha = actual.ToString(formatter);
             miHora = actual.ToString("h:mm:ss tt", CultureInfo.CurrentCulture);
         }
-
         private async void OnArqueoActionPerformed(object sender, EventArgs e)
         {
             string cod = "", codR = "";
@@ -643,7 +628,6 @@ namespace Exportacion
 
             fldCodigo.Focus();
         }
-
         private void OnLimpiarClicked(object sender, EventArgs e)
         {
             if (sw_grabar)
@@ -668,11 +652,8 @@ namespace Exportacion
             fldCodigo.IsReadOnly = true;
             fldFactura.Focus();
         }
-
         public async void Grabar()
         {
-            Console.WriteLine(fldFactura.Text);
-
             bool swError = false;
             if (!Directory.Exists(carpeta))
             {
@@ -699,14 +680,12 @@ namespace Exportacion
             sw_copiar = true;
 
         }
-
         private void OnSalirClicked(object sender, EventArgs e)
         {
 #if WINDOWS
             Application.Current?.CloseWindow(Application.Current.MainPage.Window);
 #endif
         }
-
         private async Task CaptureAndHandlePhotoAsync(string filePath)
         {
             try
@@ -741,10 +720,61 @@ namespace Exportacion
                 DisplayAlert("", $"An unexpected error occurred: {ex.Message}", "OK");
             }
         }
-
         private async void OnFormularioDeSeguimientoClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("seguimientoList");
+        }
+        private async void OnFormularioBuscarFileInspeccion(object sender, EventArgs e)
+        {
+            string searchDirectory = @"C:\Recamier\Archivos\";
+            string fileName = "regis_personas.xlsx";
+            string sourcePath = Path.Combine(searchDirectory, fileName);
+
+            if (!File.Exists(sourcePath))
+            {
+                Console.WriteLine("No se encontró el archivo regis_personas.xlsx.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(fldFactura.Text))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Seleccione un archivo Exportacion", "OK");
+                return;
+            }
+
+            string folderName = Path.Combine(searchDirectory, fldFactura.Text);
+
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+
+            string newFileName = $"{fldFactura.Text}_Inspeccion.xlsx";
+            string destinationPath = Path.Combine(folderName, newFileName);
+
+            try
+            {
+                if (File.Exists(destinationPath))
+                {
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(destinationPath)
+                    });
+                }
+                else
+                {
+                    File.Copy(sourcePath, destinationPath, overwrite: true);
+
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(destinationPath)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
+            }
         }
 
     }
