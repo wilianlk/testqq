@@ -274,10 +274,9 @@ namespace Exportacion
                 return false;
             }
 
-            string userName = Environment.UserName;
-
-            string nomCarpetaFotos = $@"C:\Users\{userName}\Pictures\Camera Roll";
+            string nomCarpetaFotos = $@"C:\Users\{miUsuario}\Pictures\Camera Roll";
             string nomCarpetaDestinoFotos = $@"C:\Recamier\Archivos\{fldFactura.Text}";
+            string nombreFoto_i = "";
 
             if (!Directory.Exists(nomCarpetaFotos))
             {
@@ -295,11 +294,12 @@ namespace Exportacion
                 string[] listado_i = Directory.GetFiles(nomCarpetaDestinoFotos);
                 for (int a = 0; a < listado_i.Length; a++)
                 {
-                    string nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
+                    nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
                         $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
-
-                    //await CaptureAndHandlePhotoAsync(nombreFoto_i);
                 }
+
+                await CaptureAndHandlePhotoAsync(nombreFoto_i);
+            
             }
             else
             {
@@ -377,7 +377,6 @@ namespace Exportacion
                 }
             }
         }
-
         private string LeeItem(string codigo)
         {
             string descripcion = null, cod;
@@ -817,7 +816,6 @@ namespace Exportacion
                     Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
                 }
             }
-        
 
     }
 

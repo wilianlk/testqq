@@ -140,8 +140,6 @@
 
             <!--<local:BorderlessEntry Placeholder="Archivo Exportacion" />-->
 
-            <Image x:Name="imgFoto" />
-
         </StackLayout>
     </ScrollView>
 </ContentPage>
