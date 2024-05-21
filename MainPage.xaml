@@ -3,143 +3,149 @@
              Title="Exportacion"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Exportacion.MainPage"
-             xmlns:local="clr-namespace:Exportacion"
-             >
+             xmlns:local="clr-namespace:Exportacion.ViewModels"
+             xmlns:pdf="clr-namespace:Exportacion.Views.Pdf">
 
-    <ScrollView>
-        <StackLayout
-            Spacing="25"
-            Padding="30,0"
-            Margin="0,25">
+    <Grid>
+        <!-- Main content -->
+        <ScrollView Grid.Row="0">
+            <StackLayout Spacing="25" Padding="30,0" Margin="0,25">
+                <StackLayout>
+                    <Label Text="Recamier S.A" Style="{StaticResource Headline}"></Label>
+                    <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
+                </StackLayout>
 
-            <StackLayout>
-                <Label Text="Recamier S.A" Style="{StaticResource Headline}"></Label>
-                <Label Text="Despachos" Style="{StaticResource SubHeadline}"></Label>
-            </StackLayout>
+                <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                    <Button Text="Formulario De Seguimiento" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnFormularioDeSeguimientoClicked" />
 
-            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
-                <Button Text="Formulario De Seguimiento" 
-				        Margin="3" 
-				        Padding="2"
-				        WidthRequest="140"
-				        HeightRequest="60"
-				        TextTransform="None"
-				        LineBreakMode="WordWrap"
-				        Clicked="OnFormularioDeSeguimientoClicked" />
+                    <Button Text="Formulario De Inspeccion" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnBuscarFileInspeccion" />
 
-                <Button Text="Formulario De Inspeccion" 
-                        Margin="3" 
-                        Padding="2"
-                        WidthRequest="140"
-                        HeightRequest="60"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap"
-                        Clicked="OnBuscarFileInspeccion" />
+                    <Button Text="Otras Fotos" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OntGuardarAction" />
 
-                <Button Text="Otras Fotos" 
-                        Margin="3" 
-                        Padding="2"
-                        WidthRequest="140"
-                        HeightRequest="60"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap"
-                        Clicked="OntGuardarAction" />
+                    <Button Text="Limpiar" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnLimpiarClicked" />
 
-                <Button Text="Limpiar" 
-                        Margin="3" 
-                        Padding="2"
-                        WidthRequest="140"
-                        HeightRequest="60"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap"
-                        Clicked="OnLimpiarClicked" />
+                    <Button Text="Arqueo" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnArqueoActionPerformed" />
 
-                <Button Text="Arqueo" 
-                        Margin="3" 
-                        Padding="2"
-                        WidthRequest="140"
-                        HeightRequest="60"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap"
-                        Clicked="OnArqueoActionPerformed" />
+                    <Button Text="Salir" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnSalirClicked" />
+                </FlexLayout>
 
-                <Button Text="Salir" 
-                        Margin="3" 
-                        Padding="2"
-                        WidthRequest="140"
-                        HeightRequest="60"
-                        TextTransform="None"
-                        LineBreakMode="WordWrap"
-                        Clicked="OnSalirClicked" />
-            </FlexLayout>
+                <Label Text="Archivo de Exportacion"
+                       HorizontalOptions="StartAndExpand">
+                </Label>
 
-            <Label Text="Archivo de Exportacion"
-                    HorizontalOptions="StartAndExpand">
-            </Label>
-
-            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
-                <local:BorderlessEntry Placeholder="Archivo Exportacion" x:Name="fldFactura" Completed="Archivo_Completed" />
-            </Frame>
-
-            <Label Text="Codigo Item"
-                   HorizontalOptions="StartAndExpand">
-            </Label>
-
-            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
-                <local:BorderlessEntry Placeholder="Codigo Item" x:Name="fldCodigo" Completed="OnfldCodigoCompleted"  IsEnabled="False" />
-            </Frame>
-
-            <Label Text="Cantidad de Cajas"
-                   HorizontalOptions="StartAndExpand">
-            </Label>
-
-            <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
-                <local:BorderlessEntry Placeholder="Cantidad de Cajas" x:Name="fldNroCajas" Completed="OnfldNroCajasCompleted"  IsEnabled="False" />
-            </Frame>
-
-            <StackLayout>
-                <Frame HasShadow="False" 
-                       BorderColor="Gray" 
-                       CornerRadius="5">
-                    <Editor HeightRequest="200"  
-                            x:Name="txtCodigos"
-                            IsEnabled="False"
-                            AutoSize="TextChanges"
-                            CursorPosition="10"
-                            SelectionLength="3"
-                            BackgroundColor="White"
-                            TextColor="Black"
-                            FontSize="16"
-                            VerticalTextAlignment="Start"/>
+                <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                    <local:BorderlessEntry Placeholder="Archivo Exportacion" x:Name="fldFactura" Completed="Archivo_Completed" />
                 </Frame>
+
+                <Label Text="Codigo Item"
+                       HorizontalOptions="StartAndExpand">
+                </Label>
+
+                <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                    <local:BorderlessEntry Placeholder="Codigo Item" x:Name="fldCodigo" Completed="OnfldCodigoCompleted" IsEnabled="False" />
+                </Frame>
+
+                <Label Text="Cantidad de Cajas"
+                       HorizontalOptions="StartAndExpand">
+                </Label>
+
+                <Frame BorderColor="LightGray" Padding="{OnPlatform Android='10,0', iOS='10,0',WinUI='2,0'}">
+                    <local:BorderlessEntry Placeholder="Cantidad de Cajas" x:Name="fldNroCajas" Completed="OnfldNroCajasCompleted" IsEnabled="False" />
+                </Frame>
+
+                <StackLayout>
+                    <Frame HasShadow="False" 
+                           BorderColor="Gray" 
+                           CornerRadius="5">
+                        <Editor HeightRequest="200"  
+                                x:Name="txtCodigos"
+                                IsEnabled="False"
+                                AutoSize="TextChanges"
+                                CursorPosition="10"
+                                SelectionLength="3"
+                                BackgroundColor="White"
+                                TextColor="Black"
+                                FontSize="16"
+                                VerticalTextAlignment="Start"/>
+                    </Frame>
+                </StackLayout>
+
+                <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="Total Cajas" FontAttributes="Bold" VerticalOptions="Center" />
+                        <local:BorderlessEntry x:Name="fldCajas" Text="0" IsReadOnly="False" WidthRequest="50" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="Total Unidades" FontAttributes="Bold" VerticalOptions="Center" />
+                        <local:BorderlessEntry x:Name="fldUnidades" Text="0" IsReadOnly="False" WidthRequest="140" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded" />
+                        <Label x:Name="Usuario" Loaded="OnTimeLoaded" />
+                        <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded" />
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
             </StackLayout>
+        </ScrollView>
 
-            <HorizontalStackLayout Spacing="7" VerticalOptions="Center">
-                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label Text="Total Cajas" FontAttributes="Bold" VerticalOptions="Center" />
-                    <local:BorderlessEntry x:Name="fldCajas" Text="0" IsReadOnly="False" WidthRequest="50" VerticalOptions="Center" />
-                </HorizontalStackLayout>
+        <!-- Floating Help Button -->
+        <Button Text="?"
+                Clicked="OnOpenPdfClicked"
+                WidthRequest="60"
+                HeightRequest="60"
+                CornerRadius="30"
+                BackgroundColor="Blue"
+                TextColor="White"
+                FontAttributes="Bold"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="20"/>
 
-                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label Text="Total Unidades" FontAttributes="Bold" VerticalOptions="Center" />
-                    <local:BorderlessEntry x:Name="fldUnidades" Text="0" IsReadOnly="False" WidthRequest="140" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-
-                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded" />
-                    <Label x:Name="Usuario" Loaded="OnTimeLoaded" />
-                    <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded" />
-                </HorizontalStackLayout>
-
-            </HorizontalStackLayout>
-
-            <!--<StackLayout>
-                <local:BorderlessEntry Placeholder="Enter" />
-                <BoxView HeightRequest="1" Color="LightGray" />
-            </StackLayout>-->
-
-            <!--<local:BorderlessEntry Placeholder="Archivo Exportacion" />-->
-
-        </StackLayout>
-    </ScrollView>
+        <!-- Pdf Modal View -->
+        <pdf:PdfModalAyudaView x:Name="pdfModalView" IsVisible="False" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+    </Grid>
 </ContentPage>

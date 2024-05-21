@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using CommunityToolkit.Maui.Views;
 using OfficeOpenXml;
+using Exportacion.ViewModels;
+
 
 
 namespace Exportacion
@@ -816,6 +818,21 @@ namespace Exportacion
                     Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
                 }
             }
+        private void OnOpenPdfClicked(object sender, EventArgs e)
+        {
+            var pdfFilePath = @"C:\Recamier\Archivos\Manual_de_Usuario_Recamier_SA.pdf";
+
+            try
+            {
+                // Cargar y mostrar el PDF en la vista modal
+                pdfModalView.LoadPdf(pdfFilePath);
+                pdfModalView.IsVisible = true;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", $"No se pudo cargar el archivo PDF: {ex.Message}", "OK");
+            }
+        }
 
     }
 

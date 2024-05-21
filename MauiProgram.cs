@@ -22,7 +22,7 @@ namespace Exportacion
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
             //Services
             builder.Services.AddSingleton<ISeguimientoService,SeguimientoService>();

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exportacion
+namespace Exportacion.ViewModels
 {
-    internal class BorderlessEntry: Entry
+    internal class BorderlessEntry : Entry
     {
 
     }
