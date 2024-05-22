@@ -6,6 +6,8 @@ using System.Globalization;
 using CommunityToolkit.Maui.Views;
 using OfficeOpenXml;
 using Exportacion.ViewModels;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 
 
@@ -670,15 +672,21 @@ namespace Exportacion
 
             try
             {
+                // Desbloquear el archivo para edición
+                UnlockFileForEditing(nombreArchivo, "123");
+
                 using (StreamWriter writer = new StreamWriter(nombreArchivo, false))
                 {
                     writer.WriteLine(texto);
                     Console.WriteLine($"Archivo guardado exitosamente en {nombreArchivo}");
                 }
 
-                string[] lineas = File.ReadAllLines(nombreArchivo);
-                // Establecer el contexto de la licencia de EPPlus antes de crear una instancia de ExcelPackage
+                // Restablecer permisos de solo lectura y denegación de eliminación para el archivo
+                SetReadOnlyPermissions(nombreArchivo);
 
+                string[] lineas = File.ReadAllLines(nombreArchivo);
+
+                // Establecer el contexto de la licencia de EPPlus antes de crear una instancia de ExcelPackage
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 using (ExcelPackage excel = new ExcelPackage())
@@ -696,7 +704,7 @@ namespace Exportacion
                     }
 
                     FileInfo excelFile = new FileInfo(nombreArchivoExcel);
-                    excel.SaveAs(excelFile);
+                    await excel.SaveAsAsync(excelFile);
                     Console.WriteLine($"Archivo de Excel guardado exitosamente en {nombreArchivoExcel}");
                 }
 
@@ -710,7 +718,51 @@ namespace Exportacion
 
             sw_grabar = false;
             sw_copiar = true;
+        }
 
+        // Método para establecer permisos de solo lectura y denegación de eliminación
+        void SetReadOnlyPermissions(string filePath)
+        {
+            FileInfo file = new FileInfo(filePath);
+            FileSecurity fileSecurity = file.GetAccessControl();
+
+            fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                FileSystemRights.Read, AccessControlType.Allow));
+            //fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+            //    FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
+
+#if NETSTANDARD || NETCOREAPP
+            FileSystemAclExtensions.SetAccessControl(file, fileSecurity);
+#else
+    file.SetAccessControl(fileSecurity);
+#endif
+        }
+
+        // Método para desbloquear el archivo para escritura con contraseña
+        public void UnlockFileForEditing(string filePath, string password)
+        {
+            if (password == "123")
+            {
+                FileInfo file = new FileInfo(filePath);
+                FileSecurity fileSecurity = file.GetAccessControl();
+
+                fileSecurity.RemoveAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                    FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
+                fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                    FileSystemRights.Write, AccessControlType.Allow));
+
+#if NETSTANDARD || NETCOREAPP
+                FileSystemAclExtensions.SetAccessControl(file, fileSecurity);
+#else
+        file.SetAccessControl(fileSecurity);
+#endif
+
+                Console.WriteLine("El archivo ha sido desbloqueado para edición.");
+            }
+            else
+            {
+                Console.WriteLine("Contraseña incorrecta. No se puede desbloquear el archivo.");
+            }
         }
         private void OnSalirClicked(object sender, EventArgs e)
         {

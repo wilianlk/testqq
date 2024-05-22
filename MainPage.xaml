@@ -32,7 +32,8 @@
                             HeightRequest="60"
                             TextTransform="None"
                             LineBreakMode="WordWrap"
-                            Clicked="OnFormularioDeSeguimientoClicked" />
+                            Clicked="OnFormularioDeSeguimientoClicked"
+                            />
 
                     <Button Text="Formulario De Inspeccion" 
                             Margin="3" 
