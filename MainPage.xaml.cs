@@ -8,6 +8,7 @@ using OfficeOpenXml;
 using Exportacion.ViewModels;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Windows.Input;
 
 
 
@@ -535,6 +536,7 @@ namespace Exportacion
                 txtCodigos.Text = texto;
 
                 fldCodigo.Text = "";
+                fldNroCajas.Text = "";
                 j++;
                 Grabar();
             }
@@ -719,8 +721,6 @@ namespace Exportacion
             sw_grabar = false;
             sw_copiar = true;
         }
-
-        // Método para establecer permisos de solo lectura y denegación de eliminación
         void SetReadOnlyPermissions(string filePath)
         {
             FileInfo file = new FileInfo(filePath);
@@ -728,8 +728,8 @@ namespace Exportacion
 
             fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
                 FileSystemRights.Read, AccessControlType.Allow));
-            //fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
-            //    FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
+            fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
 
 #if NETSTANDARD || NETCOREAPP
             FileSystemAclExtensions.SetAccessControl(file, fileSecurity);
@@ -737,8 +737,6 @@ namespace Exportacion
     file.SetAccessControl(fileSecurity);
 #endif
         }
-
-        // Método para desbloquear el archivo para escritura con contraseña
         public void UnlockFileForEditing(string filePath, string password)
         {
             if (password == "123")
@@ -815,36 +813,15 @@ namespace Exportacion
             }
         }
         private async void OnFormularioDeSeguimientoClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("seguimientoList");
+        }
+        private async void OnBuscarFileInspeccionUseguimiento(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is string tipoArchivo)
             {
-                await Shell.Current.GoToAsync("seguimientoList");
-            }
-        private async void OnBuscarFileInspeccion(object sender, EventArgs e)
-            {
-                string searchDirectory = @"C:\Recamier\Archivos\";
-                string fileName = "regis_personas.xlsx";
-                string sourcePath = Path.Combine(searchDirectory, fileName);
-
-                if (!File.Exists(sourcePath))
-                {
-                    Console.WriteLine("No se encontró el archivo regis_personas.xlsx.");
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(fldFactura.Text))
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Seleccione un archivo Exportacion", "OK");
-                    return;
-                }
-
-                string folderName = Path.Combine(searchDirectory, fldFactura.Text);
-
-                if (!Directory.Exists(folderName))
-                {
-                    Directory.CreateDirectory(folderName);
-                }
-
-                string newFileName = $"{fldFactura.Text}_Inspeccion.xlsx";
-                string destinationPath = Path.Combine(folderName, newFileName);
+                string baseFileName = tipoArchivo == "i" ? "Inspeccion.xlsm" : "Seguimiento.xlsm";
+                string destinationPath = Path.Combine(FileSystem.AppDataDirectory, baseFileName);
 
                 try
                 {
@@ -857,7 +834,13 @@ namespace Exportacion
                     }
                     else
                     {
-                        File.Copy(sourcePath, destinationPath, overwrite: true);
+                        using (Stream fileStream = await FileSystem.OpenAppPackageFileAsync(baseFileName))
+                        {
+                            using (FileStream destStream = File.Create(destinationPath))
+                            {
+                                await fileStream.CopyToAsync(destStream);
+                            }
+                        }
 
                         await Launcher.OpenAsync(new OpenFileRequest
                         {
@@ -868,21 +851,36 @@ namespace Exportacion
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Hubo un error al copiar o abrir el archivo.", "OK");
                 }
             }
-        private void OnOpenPdfClicked(object sender, EventArgs e)
+        }
+        private async void OnOpenPdfClicked(object sender, EventArgs e)
         {
-            var pdfFilePath = @"C:\Recamier\Archivos\Manual_de_Usuario_Recamier_SA.pdf";
-
             try
             {
+                // Nombre del archivo PDF en los recursos
+                string pdfFileName = "Manual_de_Usuario_Recamier_SA.pdf";
+
+                // Ruta completa en la carpeta de recursos
+                string pdfFilePath = Path.Combine(FileSystem.AppDataDirectory, pdfFileName);
+
+                // Copiar el archivo desde los recursos integrados a un lugar accesible
+                using (var stream = await FileSystem.OpenAppPackageFileAsync(pdfFileName))
+                {
+                    using (var fileStream = new FileStream(pdfFilePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                }
+
                 // Cargar y mostrar el PDF en la vista modal
                 pdfModalView.LoadPdf(pdfFilePath);
                 pdfModalView.IsVisible = true;
             }
             catch (Exception ex)
             {
-                DisplayAlert("Error", $"No se pudo cargar el archivo PDF: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"No se pudo cargar el archivo PDF: {ex.Message}", "OK");
             }
         }
 

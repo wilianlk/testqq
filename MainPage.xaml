@@ -25,6 +25,14 @@
                 </StackLayout>
 
                 <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                    <!--<Button Text="Formulario De Seguimiento" 
+                            Margin="3" 
+                            Padding="2"
+                            WidthRequest="140"
+                            HeightRequest="60"
+                            TextTransform="None"
+                            LineBreakMode="WordWrap"
+                            Clicked="OnFormularioDeSeguimientoClicked"/>no borrar-->
                     <Button Text="Formulario De Seguimiento" 
                             Margin="3" 
                             Padding="2"
@@ -32,8 +40,8 @@
                             HeightRequest="60"
                             TextTransform="None"
                             LineBreakMode="WordWrap"
-                            Clicked="OnFormularioDeSeguimientoClicked"
-                            />
+                            Clicked="OnBuscarFileInspeccionUseguimiento"
+                            CommandParameter="s"/>
 
                     <Button Text="Formulario De Inspeccion" 
                             Margin="3" 
@@ -42,7 +50,8 @@
                             HeightRequest="60"
                             TextTransform="None"
                             LineBreakMode="WordWrap"
-                            Clicked="OnBuscarFileInspeccion" />
+                            Clicked="OnBuscarFileInspeccionUseguimiento" 
+                            CommandParameter="i"/>
 
                     <Button Text="Otras Fotos" 
                             Margin="3" 

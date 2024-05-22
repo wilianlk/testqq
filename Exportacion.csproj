@@ -43,7 +43,7 @@
 		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppInstallerUri>C:\RECAMIER</AppInstallerUri>
-		<HoursBetweenUpdateChecks>168</HoursBetweenUpdateChecks>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -65,7 +65,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiAsset Remove="Resources\Raw\Manual_de_Usuario_Recamier_SA.pdf" />
+	  <MauiAsset Include="Resources\Raw\Inspeccion.xlsm" />
+	  <MauiAsset Include="Resources\Raw\Manual_de_Usuario_Recamier_SA.pdf" />
+	  <MauiAsset Include="Resources\Raw\Seguimiento.xlsm" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -84,7 +86,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="PhotoPopupPage.xaml">
+	  <MauiXaml Update="ViewModels\PhotoPopupPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Pdf\PdfModalAyudaView.xaml">
