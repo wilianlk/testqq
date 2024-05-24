@@ -820,8 +820,22 @@ namespace Exportacion
         {
             if (sender is Button button && button.CommandParameter is string tipoArchivo)
             {
+                if (string.IsNullOrWhiteSpace(fldFactura.Text))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Seleccione un archivo Exportacion", "OK");
+                    return;
+                }
+
+                string searchDirectory = Path.Combine(FileSystem.AppDataDirectory, fldFactura.Text);
+
+                if (!Directory.Exists(searchDirectory))
+                {
+                    Directory.CreateDirectory(searchDirectory);
+                }
+
                 string baseFileName = tipoArchivo == "i" ? "Inspeccion.xlsm" : "Seguimiento.xlsm";
-                string destinationPath = Path.Combine(FileSystem.AppDataDirectory, baseFileName);
+                string newFileName = $"{fldFactura.Text}_{baseFileName}";
+                string destinationPath = Path.Combine(searchDirectory, newFileName);
 
                 try
                 {
@@ -850,11 +864,11 @@ namespace Exportacion
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error al copiar o abrir el archivo: {ex.Message}");
                     await Application.Current.MainPage.DisplayAlert("Error", "Hubo un error al copiar o abrir el archivo.", "OK");
                 }
             }
         }
+
         private async void OnOpenPdfClicked(object sender, EventArgs e)
         {
             try

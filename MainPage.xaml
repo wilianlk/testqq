@@ -33,7 +33,7 @@
                             TextTransform="None"
                             LineBreakMode="WordWrap"
                             Clicked="OnFormularioDeSeguimientoClicked"/>no borrar-->
-                    <Button Text="Formulario De Seguimiento" 
+                    <Button Text="Formato De Seguimiento" 
                             Margin="3" 
                             Padding="2"
                             WidthRequest="140"
@@ -43,7 +43,7 @@
                             Clicked="OnBuscarFileInspeccionUseguimiento"
                             CommandParameter="s"/>
 
-                    <Button Text="Formulario De Inspeccion" 
+                    <Button Text="Formato De Inspeccion" 
                             Margin="3" 
                             Padding="2"
                             WidthRequest="140"
