@@ -5,12 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Exportacion"
     xmlns:view="clr-namespace:Exportacion.Views.Seguimiento"
+    xmlns:login="clr-namespace:Exportacion.Views.Pages"
     Shell.FlyoutBehavior="Disabled"
     Title="Exportacion">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate login:LoginUsuarioPage}"
         Route="MainPage" />
 
 </Shell>

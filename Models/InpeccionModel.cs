@@ -16,5 +16,5 @@ namespace Exportacion.Models
         public string Cliente_Filial { get; set; }
         public string Hora_Llegada { get; set; }
         
-}
+    }
 }
