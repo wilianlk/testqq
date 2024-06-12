@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Exportacion.Views.Login.LoginPage"
+             Title="LoginPage">
+
+    <VerticalStackLayout Padding="30" Spacing="20" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+        <Label Text="Please login to your account" 
+               HorizontalOptions="Center" />
+
+        <Entry x:Name="usernameEntry"
+               Placeholder="Username"
+               VerticalOptions="Start" />
+
+        <Entry x:Name="passwordEntry"
+               Placeholder="Password"
+               IsPassword="true"
+               VerticalOptions="Start" />
+
+        <Button Text="Login"
+                VerticalOptions="End"
+                Clicked="OnLoginClicked" />
+    </VerticalStackLayout>
+</ContentPage>

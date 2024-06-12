@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,13 @@ namespace Exportacion.Models
 {
     public class UsuarioModel
     {
-        public Guid Id { get; set; }
-        public string Email { get; set; }
-        public string Contrasena { get; set; }
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
 
-        public UsuarioModel() 
-        {
-            Id = Guid.NewGuid();
-        }
+        [NotNull]
+        public string Username { get; set; }
+
+        [NotNull]
+        public string Password { get; set; }
     }
 }

@@ -8,6 +8,5 @@ namespace Exportacion.ViewModels
 {
     internal class BorderlessEntry : Entry
     {
-
     }
 }

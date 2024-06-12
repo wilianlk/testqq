@@ -6,27 +6,14 @@ namespace Exportacion
 {
     public partial class App : Application
     {
-        static SQLiteData _bancoDados;
-
-        public static SQLiteData BancoDados
-        {
-            get
-            {
-                if (_bancoDados == null)
-                {
-                    _bancoDados =
-                        new SQLiteData(Path.Combine(Environment.
-                        GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Exportacion.db3"));
-                }
-                return _bancoDados;
-            }
-        }
-        public static UsuarioData usuario { get; set; }
+        public static bool IsUserLoggedIn { get; set; } = false;
         public App()
         {
             InitializeComponent();
 
             MainPage = new AppShell();
+            MainPage = IsUserLoggedIn ? new NavigationPage(new Views.MainPage()) : new NavigationPage(new Views.Login.LoginPage());
+
 
             Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(BorderlessEntry), (handler, view) =>
             {
@@ -40,7 +27,16 @@ namespace Exportacion
                 handler.PlatformView.Background = null;
                 handler.PlatformView.FocusVisualMargin = new Microsoft.UI.Xaml.Thickness(0);
 #endif
-            }); 
+            });
+        }
+        protected override void OnStart()
+        {
+        }
+        protected override void OnSleep()
+        {
+        }
+        protected override void OnResume()
+        {
         }
 
     }

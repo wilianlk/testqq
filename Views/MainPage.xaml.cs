@@ -9,10 +9,9 @@ using Exportacion.ViewModels;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Windows.Input;
+using Exportacion.Views.Login;
 
-
-
-namespace Exportacion
+namespace Exportacion.Views
 {
     public partial class MainPage : ContentPage
     {
@@ -54,6 +53,12 @@ namespace Exportacion
         public MainPage()
         {
             InitializeComponent();
+
+            if (!App.IsUserLoggedIn)
+            {
+                // Redirigir a la página de login si no está autenticado
+                Application.Current.MainPage = new NavigationPage(new LoginPage());
+            }
         }
 
         private void OnUsuario_OnLoaded(object sender, EventArgs e)
@@ -84,8 +89,28 @@ namespace Exportacion
         private async void Archivo_Completed(object sender, EventArgs e)
         {
             var entry = sender as Entry;
-            carpeta = @"C:\Recamier\Archivos";
-            string filePath = Path.Combine(carpeta, $"{entry.Text}.txt");
+
+            string platform = DeviceInfo.Platform.ToString();
+
+            switch (platform)
+            {
+                case "WinUI":
+                    carpeta = @"C:\Recamier\Archivos";
+                    break;
+                case "Android":
+#if ANDROID
+                    carpeta = Path.Combine(Android.App.Application.Context.GetExternalFilesDir(null).AbsolutePath, "Recamier", "Archivos");
+#endif
+                    break;
+                case "iOS":
+                    carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Recamier", "Archivos");
+                    break;
+                default:
+                    carpeta = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Recamier", "Archivos");
+                    break;
+            }
+
+            string filePath = Path.Combine(carpeta, $"{entry.Text}.txt");  // Definir ruta de archivo aquí, común para todos los casos
 
             if (File.Exists(filePath))
             {
@@ -99,12 +124,12 @@ namespace Exportacion
                     {
                         PickerTitle = "Seleccione un archivo",
                         FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-                {
-                    { DevicePlatform.iOS, new[] { "public.text" } },
-                    { DevicePlatform.Android, new[] { "text/plain" } },
-                    { DevicePlatform.WinUI, new[] { ".txt" } },
-                    { DevicePlatform.MacCatalyst, new[] { "public.text" } }
-                })
+                        {
+                            { DevicePlatform.iOS, new[] { "public.text" } },
+                            { DevicePlatform.Android, new[] { "text/plain" } },
+                            { DevicePlatform.WinUI, new[] { ".txt" } },
+                            { DevicePlatform.MacCatalyst, new[] { "public.text" } }
+                        })
                     });
 
                     if (fileResult != null)
@@ -114,7 +139,6 @@ namespace Exportacion
                         if (File.Exists(filePath))
                         {
                             ProcessFileConfirmation(entry.Text);
-
                         }
                         else
                         {
@@ -183,7 +207,6 @@ namespace Exportacion
                                 jr++;
                             }
                         }
-                        Console.WriteLine($"Total remisión: {totalRemision}");
                         //await Application.Current.MainPage.DisplayAlert("Total remisión", $"Total remisión: {totalRemision}", "OK");
                     }
                 }
@@ -279,9 +302,34 @@ namespace Exportacion
                 return false;
             }
 
-            string nomCarpetaFotos = $@"C:\Users\{miUsuario}\Pictures\Camera Roll";
-            string nomCarpetaDestinoFotos = $@"C:\Recamier\Archivos\{fldFactura.Text}";
+            string platform = DeviceInfo.Platform.ToString();
+            string nomCarpetaFotos = "";
+            string nomCarpetaDestinoFotos = "";
             string nombreFoto_i = "";
+
+            switch (platform)
+            {
+                case "iOS":
+                case "MacCatalyst":
+                    // Ejemplo de ruta en iOS y MacCatalyst
+                    nomCarpetaFotos = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Camera Roll");
+                    nomCarpetaDestinoFotos = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fldFactura.Text);
+                    break;
+                case "Android":
+#if ANDROID
+                    nomCarpetaFotos = Path.Combine(Android.App.Application.Context.GetExternalFilesDir(null).AbsolutePath, "Camera Roll");
+                    nomCarpetaDestinoFotos = Path.Combine(Android.App.Application.Context.GetExternalFilesDir(null).AbsolutePath, "Recamier", "Archivos", fldFactura.Text);
+#endif
+                    break;
+                case "Windows":
+                    nomCarpetaFotos = $@"C:\Users\{Environment.UserName}\Pictures\Camera Roll";
+                    nomCarpetaDestinoFotos = $@"C:\Recamier\Archivos\{fldFactura.Text}";
+                    break;
+                default:
+                    nomCarpetaFotos = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Camera Roll");
+                    nomCarpetaDestinoFotos = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), fldFactura.Text);
+                    break;
+            }
 
             if (!Directory.Exists(nomCarpetaFotos))
             {
@@ -302,7 +350,7 @@ namespace Exportacion
                     nombreFoto_i = Path.Combine(nomCarpetaDestinoFotos,
                         $"{fldFactura.Text}_{fldCodigo.Text.Substring(0, Math.Min(6, fldCodigo.Text.Length))}_{currentTime.Substring(0, 2)}{currentTime.Substring(2, 2)}{currentTime.Substring(4, 2)}_{a}.jpg");
                 }
-
+                                              
                 await CaptureAndHandlePhotoAsync(nombreFoto_i);
             
             }
@@ -387,14 +435,10 @@ namespace Exportacion
             string descripcion = null, cod;
             int i;
 
-            Console.WriteLine("Lee item: " + codigo);
-
             for (i = 0; i < ar_codigosR.Length; i++)
             {
                 if (!string.IsNullOrEmpty(ar_codigosR[i]) && ar_codigosR[i] != null)
                 {
-
-                    Console.WriteLine(ar_codigosR[i]);
 
                     cod = ar_codigosR[i];
                     Console.WriteLine($"i= {i}");
@@ -709,11 +753,9 @@ namespace Exportacion
                     await excel.SaveAsAsync(excelFile);
                     Console.WriteLine($"Archivo de Excel guardado exitosamente en {nombreArchivoExcel}");
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ocurrió un error al escribir el archivo:");
                 Console.WriteLine(ex.Message);
                 swError = true;
             }
@@ -739,27 +781,73 @@ namespace Exportacion
         }
         public void UnlockFileForEditing(string filePath, string password)
         {
-            if (password == "123")
+            if (password != "123")
             {
-                FileInfo file = new FileInfo(filePath);
-                FileSecurity fileSecurity = file.GetAccessControl();
+                Console.WriteLine("Contraseña incorrecta. No se puede desbloquear el archivo.");
+                return;
+            }
 
-                fileSecurity.RemoveAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
-                    FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
-                fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
-                    FileSystemRights.Write, AccessControlType.Allow));
+            string platform = DeviceInfo.Platform.ToString();
+            if (platform == "WinUI")
+            {
+#if WINDOWS
+        try
+        {
+            FileInfo file = new FileInfo(filePath);
+            FileSecurity fileSecurity = file.GetAccessControl();
+            fileSecurity.RemoveAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                FileSystemRights.Write | FileSystemRights.Delete, AccessControlType.Deny));
+            fileSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                FileSystemRights.Write, AccessControlType.Allow));
 
 #if NETSTANDARD || NETCOREAPP
-                FileSystemAclExtensions.SetAccessControl(file, fileSecurity);
+            FileSystemAclExtensions.SetAccessControl(file, fileSecurity);
 #else
-        file.SetAccessControl(fileSecurity);
+            file.SetAccessControl(fileSecurity);
 #endif
+            Console.WriteLine("El archivo ha sido desbloqueado para edición en Windows.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al desbloquear el archivo en Windows: {ex.Message}");
+        }
+#else
+                Console.WriteLine("El código específico de Windows no se puede ejecutar en esta plataforma.");
+#endif
+            }
+            else if (platform == "Android")
+            {
+#if ANDROID
+        try
+        {
+            Java.IO.File file = new Java.IO.File(filePath);
+            if (!file.Exists())
+            {
+                Console.WriteLine("El archivo no existe.");
+                return;
+            }
 
-                Console.WriteLine("El archivo ha sido desbloqueado para edición.");
+            bool result = file.SetWritable(true, false);
+            if (result)
+            {
+                Console.WriteLine("El archivo ha sido desbloqueado para edición en Android.");
             }
             else
             {
-                Console.WriteLine("Contraseña incorrecta. No se puede desbloquear el archivo.");
+                Console.WriteLine("No se pudo cambiar los permisos del archivo.");
+            }
+        }
+        catch (Java.IO.IOException ex)
+        {
+            Console.WriteLine($"Error al desbloquear el archivo en Android: {ex.Message}");
+        }
+#else
+                Console.WriteLine("El código específico de Android no se puede ejecutar en esta plataforma.");
+#endif
+            }
+            else
+            {
+                Console.WriteLine($"La plataforma {platform} no es compatible con esta operación.");
             }
         }
         private void OnSalirClicked(object sender, EventArgs e)
@@ -868,15 +956,11 @@ namespace Exportacion
                 }
             }
         }
-
         private async void OnOpenPdfClicked(object sender, EventArgs e)
         {
             try
             {
-                // Nombre del archivo PDF en los recursos
                 string pdfFileName = "Manual_de_Usuario_Recamier_SA.pdf";
-
-                // Ruta completa en la carpeta de recursos
                 string pdfFilePath = Path.Combine(FileSystem.AppDataDirectory, pdfFileName);
 
                 // Copiar el archivo desde los recursos integrados a un lugar accesible
@@ -888,7 +972,6 @@ namespace Exportacion
                     }
                 }
 
-                // Cargar y mostrar el PDF en la vista modal
                 pdfModalView.LoadPdf(pdfFilePath);
                 pdfModalView.IsVisible = true;
             }

@@ -11,7 +11,8 @@ public partial class PdfModalAyudaView : ContentView
         pdfWebView.Source = pdfFilePath;
         pdfWebView.Navigated += (s, e) =>
         {
-            pdfWebView.Eval("document.body.style.zoom='150%'");
+            pdfWebView.Eval("document.body.style.zoom='100%'");
+            pdfWebView.Eval("document.body.style.width='100%'");
         };
     }
     private void OnCloseButtonClicked(object sender, EventArgs e)
