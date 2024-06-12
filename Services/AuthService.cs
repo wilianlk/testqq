@@ -1,9 +1,5 @@
 ﻿using Exportacion.Models;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Exportacion.Services
@@ -17,51 +13,47 @@ namespace Exportacion.Services
             _db = new SQLiteAsyncConnection(dbPath);
             Initialize();
         }
+
         private async void Initialize()
         {
             await SetUpDb();
         }
+
         private async Task SetUpDb()
         {
             await _db.CreateTableAsync<UsuarioModel>();
-
             var adminExists = await _db.Table<UsuarioModel>().Where(u => u.Username == "admin").CountAsync() > 0;
             if (!adminExists)
             {
-                await AddUser("admin", HashPassword("admin123"));
+                await AddUser("admin", "admin123"); // Password should be hashed in AddUser
             }
         }
-        private string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
-        }
+
         public async Task<bool> Login(string username, string password)
         {
             var user = await _db.Table<UsuarioModel>()
                                 .Where(u => u.Username == username)
                                 .FirstOrDefaultAsync();
-
-            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
-            {
-                return true;
-            }
-
-            return false;
+            return user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
         }
+
         public async Task AddUser(string username, string password)
         {
-            var hashedPassword = HashPassword(password);
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
             var newUser = new UsuarioModel { Username = username, Password = hashedPassword };
             await _db.InsertAsync(newUser);
         }
+
         public async Task<List<UsuarioModel>> GetAllUsers()
         {
             return await _db.Table<UsuarioModel>().ToListAsync();
         }
+
         public async Task UpdateUser(UsuarioModel user)
         {
             await _db.UpdateAsync(user);
         }
+
         public async Task DeleteUser(int userId)
         {
             var user = await _db.FindAsync<UsuarioModel>(userId);
