@@ -12,7 +12,15 @@ namespace Exportacion.Views.Login
         public LoginPage()
         {
             InitializeComponent();
-            _authService = new AuthService(DatabaseHelper.GetDatabasePath());
+            string dbPath = DatabaseHelper.GetDatabasePath();
+            if (!string.IsNullOrEmpty(dbPath))
+            {
+                _authService = new AuthService(dbPath);
+            }
+            else
+            {
+                DisplayAlert("Error", "No se pudo inicializar el servicio de autenticación.", "OK");
+            }
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)

@@ -44,7 +44,7 @@
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppInstallerUri>C:\RECAMIER</AppInstallerUri>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-		<PackageCertificateKeyFile>Exportacion_TemporaryKey.pfx</PackageCertificateKeyFile>
+		<PackageCertificateThumbprint>3A94F7B2EB6E3A14CB0D18A2B56DBBA545881AE1</PackageCertificateThumbprint>
 	</PropertyGroup>
 
 	<ItemGroup>

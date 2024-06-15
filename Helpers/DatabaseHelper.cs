@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Exportacion.Helpers
 {
@@ -11,21 +8,38 @@ namespace Exportacion.Helpers
         public static string GetDatabasePath()
         {
             string dbFileName = "Exportacion.db3";
-            string dbFolderPath = string.Empty;
+            string dbFolderPath = @"C:\Recamier\DBExportacion";
 
-#if WINDOWS
-    string baseDir = AppContext.BaseDirectory;
-    string projectDir = Directory.GetParent(baseDir).Parent.Parent.Parent.Parent.Parent.FullName;
-    dbFolderPath = Path.Combine(projectDir, "DB");
-#elif ANDROID
-    dbFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            try
+            {
+#if ANDROID
+                dbFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 #else
-            throw new PlatformNotSupportedException("Platform not supported");
+                // Asegúrate de que la carpeta de la base de datos exista
+                if (!Directory.Exists(dbFolderPath))
+                {
+                    Directory.CreateDirectory(dbFolderPath);
+                    Logger.Log($"Created Database Folder Path: {dbFolderPath}");
+                }
 #endif
 
-            return Path.Combine(dbFolderPath, dbFileName);
+                string dbPath = Path.Combine(dbFolderPath, dbFileName);
+                Logger.Log($"Database path determined: {dbPath}");
+
+                // Asegúrate de que la base de datos exista
+                if (!File.Exists(dbPath))
+                {
+                    Logger.Log("Database does not exist. Creating new database.");
+                    File.Create(dbPath).Close();  // Crea el archivo de base de datos
+                }
+
+                return dbPath;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                throw new Exception("Failed to determine or create the database path. Please check the logs for more details.", ex);
+            }
         }
-
-
     }
 }
