@@ -8,6 +8,7 @@ namespace Exportacion
     public partial class App : Application
     {
         public static bool IsUserLoggedIn { get; set; } = false;
+        public static string CurrentUser { get; set; }
 
         public App()
         {

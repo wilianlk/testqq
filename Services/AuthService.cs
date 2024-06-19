@@ -25,10 +25,9 @@ namespace Exportacion.Services
             var adminExists = await _db.Table<UsuarioModel>().Where(u => u.Username == "admin").CountAsync() > 0;
             if (!adminExists)
             {
-                await AddUser("admin", "admin123"); // Password should be hashed in AddUser
+                await AddUser("admin", "admin123");
             }
         }
-
         public async Task<bool> Login(string username, string password)
         {
             var user = await _db.Table<UsuarioModel>()
@@ -36,24 +35,20 @@ namespace Exportacion.Services
                                 .FirstOrDefaultAsync();
             return user != null && BCrypt.Net.BCrypt.Verify(password, user.Password);
         }
-
         public async Task AddUser(string username, string password)
         {
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
             var newUser = new UsuarioModel { Username = username, Password = hashedPassword };
             await _db.InsertAsync(newUser);
         }
-
         public async Task<List<UsuarioModel>> GetAllUsers()
         {
             return await _db.Table<UsuarioModel>().ToListAsync();
         }
-
         public async Task UpdateUser(UsuarioModel user)
         {
             await _db.UpdateAsync(user);
         }
-
         public async Task DeleteUser(int userId)
         {
             var user = await _db.FindAsync<UsuarioModel>(userId);

@@ -33,13 +33,14 @@ namespace Exportacion.Views.Login
             if (isValid)
             {
                 App.IsUserLoggedIn = true;
+                App.CurrentUser = username;
                 // Navegar a la página principal o dashboard
                 await Navigation.PushAsync(new MainPage());
             }
             else
             {
                 // Mostrar un mensaje de error
-                await DisplayAlert("Login Failed", "Invalid username or password", "OK");
+                await DisplayAlert("Login Failed", "Usuario o Contraseña Invalido", "OK");
             }
         }
     }

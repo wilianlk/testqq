@@ -59,12 +59,8 @@ namespace Exportacion.Views
                 // Redirigir a la página de login si no está autenticado
                 Application.Current.MainPage = new NavigationPage(new LoginPage());
             }
-        }
 
-        private void OnUsuario_OnLoaded(object sender, EventArgs e)
-        {
-            var usuarioLabel = (Label)sender;
-            usuarioLabel.Text = Environment.UserName;
+            Usuario.Text = !string.IsNullOrEmpty(App.CurrentUser) ? App.CurrentUser : Environment.UserName;
         }
         private void OnTime_DateLoaded(object sender, EventArgs e)
         {
@@ -265,8 +261,6 @@ namespace Exportacion.Views
 
             double porcentaje = totalRemision > 0 ? ((total * 100.0) / totalRemision) : 0.0;
             string porcentajeFormateado = porcentaje.ToString("N1");
-
-            Console.WriteLine(" %  " + porcentajeFormateado + "%");
 
             txtCodigos.Text = texto;
             fldCajas.Text = total_cajas.ToString();

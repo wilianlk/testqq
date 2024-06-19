@@ -144,8 +144,8 @@
 
                     <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                         <Label x:Name="date_time_f" Loaded="OnTime_DateLoaded" />
-                        <Label x:Name="Usuario" Loaded="OnTimeLoaded" />
-                        <Label x:Name="date_f" Loaded="OnUsuario_OnLoaded" />
+                        <Label x:Name="date_f" Loaded="OnTimeLoaded" />
+                        <Label x:Name="Usuario"/>
                     </HorizontalStackLayout>
                 </HorizontalStackLayout>
             </StackLayout>
