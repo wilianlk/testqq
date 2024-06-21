@@ -62,6 +62,18 @@ namespace Exportacion.Views
 
             Usuario.Text = !string.IsNullOrEmpty(App.CurrentUser) ? App.CurrentUser : Environment.UserName;
         }
+        private void OnMenuButtonClicked(object sender, EventArgs e)
+        {
+            // Alternativa para obtener la instancia de Shell
+            if (Application.Current.MainPage is Shell shell)
+            {
+                shell.FlyoutIsPresented = true;
+            }
+            else
+            {
+                Console.WriteLine("Shell.Current is null");
+            }
+        }
         private void OnTime_DateLoaded(object sender, EventArgs e)
         {
             DateTime currentDate = DateTime.Now;

@@ -13,12 +13,10 @@ namespace Exportacion.Services
             _db = new SQLiteAsyncConnection(dbPath);
             Initialize();
         }
-
         private async void Initialize()
         {
             await SetUpDb();
         }
-
         private async Task SetUpDb()
         {
             await _db.CreateTableAsync<UsuarioModel>();

@@ -6,12 +6,15 @@
     xmlns:local="clr-namespace:Exportacion.Views"
     xmlns:view="clr-namespace:Exportacion.Views.Seguimiento"
     xmlns:login="clr-namespace:Exportacion.Views.Login"
-    Shell.FlyoutBehavior="Disabled"
-    Title="Exportacion">
+    Shell.FlyoutBehavior="Flyout"
+    Title="Exportacion"
+    FlyoutBackgroundColor="White">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <FlyoutItem Title="Home">
+        <ShellContent
+            Title="Main Page"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+    </FlyoutItem>
 
 </Shell>

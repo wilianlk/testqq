@@ -96,6 +96,9 @@
 	  <MauiXaml Update="Views\Login\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Login\UserManagementPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Pdf\PdfModalAyudaView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
